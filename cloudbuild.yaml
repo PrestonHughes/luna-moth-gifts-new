@@ -1,30 +1,32 @@
 steps:
-# 1. Create a .env file from Cloud Build substitution variables
+# 1. Install npm dependencies
+- name: 'gcr.io/cloud-builders/npm'
+  id: 'Install dependencies'
+  args: ['install']
+
+# 2. Build the application, injecting variables directly
 - name: 'bash'
-  id: 'Create .env file'
+  id: 'Build application'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    echo "API_KEY=${_API_KEY}" > .env
-    echo "FIREBASE_API_KEY=${_FIREBASE_API_KEY}" >> .env
-    echo "FIREBASE_AUTH_DOMAIN=${_FIREBASE_AUTH_DOMAIN}" >> .env
-    echo "FIREBASE_PROJECT_ID=${_FIREBASE_PROJECT_ID}" >> .env
-    echo "FIREBASE_STORAGE_BUCKET=${_FIREBASE_STORAGE_BUCKET}" >> .env
-    echo "FIREBASE_MESSAGING_SENDER_ID=${_FIREBASE_MESSAGING_SENDER_ID}" >> .env
-    echo "FIREBASE_APP_ID=${_FIREBASE_APP_ID}" >> .env
-    echo "FIREBASE_MEASUREMENT_ID=${_FIREBASE_MEASUREMENT_ID}" >> .env
-    echo "Created .env file with secrets for esbuild."
+    # Run esbuild directly from node_modules, passing each environment variable
+    # from the Cloud Build substitution variables as a '--define' flag.
+    # This replaces 'process.env.VAR_NAME' in the source code with the actual
+    # string value at build time. The single and double quotes are important
+    # to ensure the values are correctly interpreted as strings by esbuild.
+    ./node_modules/.bin/esbuild index.tsx --bundle --outfile=dist/bundle.js --minify --sourcemap \
+      --define:process.env.API_KEY="'${_API_KEY}'" \
+      --define:process.env.FIREBASE_API_KEY="'${_FIREBASE_API_KEY}'" \
+      --define:process.env.FIREBASE_AUTH_DOMAIN="'${_FIREBASE_AUTH_DOMAIN}'" \
+      --define:process.env.FIREBASE_PROJECT_ID="'${_FIREBASE_PROJECT_ID}'" \
+      --define:process.env.FIREBASE_STORAGE_BUCKET="'${_FIREBASE_STORAGE_BUCKET}'" \
+      --define:process.env.FIREBASE_MESSAGING_SENDER_ID="'${_FIREBASE_MESSAGING_SENDER_ID}'" \
+      --define:process.env.FIREBASE_APP_ID="'${_FIREBASE_APP_ID}'" \
+      --define:process.env.FIREBASE_MEASUREMENT_ID="'${_FIREBASE_MEASUREMENT_ID}'"
 
-# 2. Install npm dependencies
-- name: 'gcr.io/cloud-builders/npm'
-  args: ['install']
-
-# 3. Build the application using the .env file
-- name: 'gcr.io/cloud-builders/npm'
-  args: ['run', 'build']
-
-# 4. Write an nginx config and a Dockerfile on the fly.
+# 3. Write an nginx config and a Dockerfile on the fly.
 #    The nginx config is set up to properly serve a Single-Page Application (SPA).
 - name: 'bash'
   entrypoint: 'bash'
@@ -72,7 +74,7 @@ steps:
     CMD ["nginx", "-g", "daemon off;"]
     EOF
 
-# 5. Build the docker image using the Dockerfile we just created.
+# 4. Build the docker image using the Dockerfile we just created.
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
@@ -80,11 +82,11 @@ steps:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest'
   - '.'
 
-# 6. Push the final container image to Artifact Registry.
+# 5. Push the final container image to Artifact Registry.
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest']
 
-# 7. Deploy the container image to Cloud Run.
+# 6. Deploy the container image to Cloud Run.
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'gcloud'
   args:

@@ -4,7 +4,7 @@
   "description": "A sleek, modern web application for Luna Moth Gifts, a crystal and gemstone business.",
   "private": true,
   "scripts": {
-    "build": "esbuild index.tsx --bundle --outfile=dist/bundle.js --minify --sourcemap --env-file=.env"
+    "build": "esbuild index.tsx --bundle --outfile=dist/bundle.js --minify --sourcemap"
   },
   "dependencies": {
     "@google/genai": "^1.21.0",
