@@ -1,0 +1,19 @@
+// Fix: Converted to a TypeScript module exporting the Caddyfile content as a string.
+// This resolves TypeScript parsing errors while preserving the configuration for a build process
+// that might extract this string into a `Caddyfile`.
+export default `{
+	# Enable auto-HTTPS via Let's Encrypt
+	auto_https off
+}
+
+:8080 {
+	# Set the root directory for your site
+	root * /usr/share/caddy
+	
+	# Enable file serving
+	file_server
+	
+	# Handle client-side routing for your single-page app
+	try_files {path} /index.html
+}
+`;

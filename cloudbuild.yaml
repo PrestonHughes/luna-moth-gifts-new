@@ -1,0 +1,83 @@
+steps:
+# 1. Install npm dependencies
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['install']
+
+# 2. Build the application, injecting the Gemini API key and Firebase config from Cloud Build substitution variables.
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['run', 'build']
+  env:
+  - 'API_KEY=$_API_KEY'
+  - 'FIREBASE_API_KEY=$_FIREBASE_API_KEY'
+  - 'FIREBASE_AUTH_DOMAIN=$_FIREBASE_AUTH_DOMAIN'
+  - 'FIREBASE_PROJECT_ID=$_FIREBASE_PROJECT_ID'
+  - 'FIREBASE_STORAGE_BUCKET=$_FIREBASE_STORAGE_BUCKET'
+  - 'FIREBASE_MESSAGING_SENDER_ID=$_FIREBASE_MESSAGING_SENDER_ID'
+  - 'FIREBASE_APP_ID=$_FIREBASE_APP_ID'
+  - 'FIREBASE_MEASUREMENT_ID=$_FIREBASE_MEASUREMENT_ID'
+
+# 3. Write an nginx config and a Dockerfile on the fly.
+#    The nginx config is set up to properly serve a Single-Page Application (SPA).
+- name: 'bash'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    cat <<EOF > nginx.conf
+    server {
+      listen 8080;
+      # Define the root directory for our application files.
+      root /app;
+      # Default file to serve.
+      index index.html;
+
+      # This location block is a catch-all for any request.
+      location / {
+        # It first tries to find a file matching the request URI (\$uri).
+        # If not found, it falls back to serving /index.html.
+        # This is the standard pattern for single-page applications.
+        try_files \$uri /index.html;
+      }
+    }
+    EOF
+
+    cat <<EOF > Dockerfile
+    # Use a lightweight nginx image
+    FROM nginx:1.25-alpine
+
+    # Copy our custom nginx configuration to replace the default one.
+    # This config makes nginx listen on port 8080 and serve our SPA.
+    COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+    # Set the working directory inside the container.
+    WORKDIR /app
+
+    # Copy all the built static assets from the build step into the container.
+    COPY ./dist/ ./dist/
+    COPY ./index.html .
+    COPY ./favicon.svg .
+
+    # Expose the port Cloud Run expects
+    EXPOSE 8080
+
+    # Start nginx in the foreground
+    CMD ["nginx", "-g", "daemon off;"]
+    EOF
+
+# 4. Build the docker image using the Dockerfile we just created.
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-t'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest'
+  - '.'
+
+# 5. Push the final container image to Artifact Registry.
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest']
+
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
