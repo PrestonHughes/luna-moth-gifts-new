@@ -13,7 +13,7 @@ export const Logo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     >
         <g fill="currentColor">
             {/* Moth Icon */}
-            <g transform="translate(15, 23) scale(1.6)">
+            <g transform="translate(15, 23) scale(1.6)" color="#A7A1E5">
                 {/* Body */}
                 <path d="M0 -14v10" stroke="currentColor" strokeWidth="1" />
                 {/* Antennae */}
