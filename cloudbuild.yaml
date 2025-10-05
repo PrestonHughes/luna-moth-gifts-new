@@ -76,6 +76,21 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest']
 
+# 6. Deploy the container image to Cloud Run.
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'luna-moth-gifts' # The name of your Cloud Run service
+    - '--image'
+    - 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest'
+    - '--region'
+    - 'us-central1'
+    - '--platform'
+    - 'managed'
+    - '--allow-unauthenticated' # To keep the service public
+
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest'
 
