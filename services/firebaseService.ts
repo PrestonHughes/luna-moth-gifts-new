@@ -10,7 +10,7 @@ let isInitialized = false;
 
 /**
  * Lazily initializes and returns the Firebase App instance.
- * Returns null if the configuration (e.g., API key) is missing or a placeholder.
+ * Returns null if the configuration is incomplete or initialization fails.
  */
 export const getFirebaseApp = (): firebase.app.App | null => {
     if (isInitialized) {
@@ -18,18 +18,18 @@ export const getFirebaseApp = (): firebase.app.App | null => {
     }
     isInitialized = true; // Attempt initialization only once.
 
-    // Disable Firebase if the apiKey is missing or still a placeholder.
-    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('YOUR_API_KEY')) {
-        console.warn("Firebase config is missing or is a placeholder. Firebase features will be disabled.");
-        return null;
+    try {
+        // Fix: Use v8 compat initialization check.
+        if (!firebase.apps.length) {
+            app = firebase.initializeApp(firebaseConfig);
+        } else {
+            app = firebase.app();
+        }
+    } catch (error) {
+        console.error("Failed to initialize Firebase. This is expected in the IDE if using placeholder keys. In a deployed environment, check your build variables.", error);
+        app = null;
     }
     
-    // Fix: Use v8 compat initialization check.
-    if (!firebase.apps.length) {
-        app = firebase.initializeApp(firebaseConfig);
-    } else {
-        app = firebase.app();
-    }
     return app;
 };
 
@@ -77,6 +77,10 @@ const mapAuthError = (error: any): string => {
     // If it's a Firebase error with a code, handle it specifically.
     if (error && error.code) {
         switch (error.code) {
+            // Provide a specific, actionable error for configuration issues.
+            case 'auth/configuration-not-found':
+            case 'auth/invalid-api-key':
+                return 'Firebase setup is incomplete. This is likely an issue with the build configuration. Please contact support.';
             case 'auth/email-already-in-use':
                 return 'An account with this email already exists.';
             case 'auth/invalid-email':
@@ -117,7 +121,7 @@ const mapAuthError = (error: any): string => {
  */
 export const signUpWithEmail = async (email: string, password: string) => {
     const authInstance = getFirebaseAuth();
-    if (!authInstance) throw new Error("Firebase is not configured in this environment.");
+    if (!authInstance) throw new Error("Firebase is not properly configured. Check the browser console for details.");
 
     try {
         // Fix: Use v8 compat createUserWithEmailAndPassword method.
@@ -137,7 +141,7 @@ export const signUpWithEmail = async (email: string, password: string) => {
  */
 export const signInWithEmail = async (email: string, password: string) => {
     const authInstance = getFirebaseAuth();
-    if (!authInstance) throw new Error("Firebase is not configured in this environment.");
+    if (!authInstance) throw new Error("Firebase is not properly configured. Check the browser console for details.");
 
     try {
         // Fix: Use v8 compat signInWithEmailAndPassword method.

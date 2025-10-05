@@ -54,6 +54,14 @@ This document provides a comprehensive overview of the Luna Moth Gifts web appli
 
 ## 5. Key Architectural Decisions & History
 
+### **Environment Configuration Strategy**
+
+- **Problem:** The app needs API keys to run, but these keys are only injected during the Cloud Build deployment, causing the app to crash with a "configuration missing" error in the AI Studio IDE.
+- **Solution:** A graceful fallback mechanism has been implemented in `firebaseConfig.ts` and `services/geminiService.ts`.
+  - The code attempts to read API keys from `process.env` (for the deployed production environment).
+  - If an environment variable is not found (the case in the AI Studio IDE), it falls back to a non-functional placeholder string (e.g., `'MISSING_API_KEY_IN_IDE'`).
+- **Outcome:** This allows the app to initialize and run without errors in the IDE, enabling UI development and testing of non-API-dependent features. Full functionality (Auth, Gemini) is only available in the final deployed version where the real keys are present.
+
 ### **Firebase SDK Version: v8 Compatibility**
 
 - **This is a critical point.** The project has been standardized to use the **Firebase v8 compatibility API** (`firebase/compat/app`, `firebase/compat/auth`, etc.).

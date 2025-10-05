@@ -2,7 +2,9 @@ import { GoogleGenAI, Type } from "@google/genai";
 import type { GeminiSuggestion, Product } from '../types';
 
 // The API key is injected by the build process.
-const API_KEY = process.env.API_KEY;
+// When running in an environment without this variable (like the AI Studio IDE),
+// it falls back to a safe placeholder string to allow the app to initialize without errors.
+const API_KEY = process.env.API_KEY ?? 'MISSING_API_KEY_IN_IDE';
 
 let ai: GoogleGenAI | null = null;
 
@@ -11,20 +13,20 @@ let ai: GoogleGenAI | null = null;
  * e.g., "AIza...kg_U"
  */
 const getApiKeySnippet = (): string => {
-    if (!API_KEY || API_KEY.length < 8) {
-        return "Not Available";
+    if (!API_KEY || API_KEY.length < 8 || API_KEY === 'MISSING_API_KEY_IN_IDE') {
+        return "Not Available (IDE Mode)";
     }
     return `${API_KEY.substring(0, 4)}...${API_KEY.substring(API_KEY.length - 4)}`;
 }
 
 /**
  * Lazily initializes and returns the GoogleGenAI client.
- * Throws a specific, user-friendly error if the API key is missing.
+ * Throws a specific, user-friendly error if the API key is missing or a placeholder.
  */
 const getAiClient = (): GoogleGenAI => {
-    if (!API_KEY) {
-        console.error("API_KEY is missing. The application was likely built without the API key.");
-        throw new Error("AI Oracle is not configured. Please contact support.");
+    if (API_KEY === 'MISSING_API_KEY_IN_IDE') {
+        console.error("API_KEY is missing. The application was likely built without the API key or is running in an IDE.");
+        throw new Error("AI Oracle is not configured. This feature is unavailable in the current environment.");
     }
     if (!ai) {
         ai = new GoogleGenAI({ apiKey: API_KEY });
