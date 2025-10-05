@@ -34,7 +34,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         <img
           src={product.imageUrls[0]}
           alt={product.name}
-          referrerPolicy="no-referrer"
           className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
         />
       </div>

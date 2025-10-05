@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import type { Product, ProductVariant } from '../types';
 
@@ -85,7 +86,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                                 <img 
                                     src={activeImageUrl} 
                                     alt={product.name} 
-                                    referrerPolicy="no-referrer"
                                     className="w-full h-full object-cover" 
                                 />
                             </div>
@@ -101,7 +101,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                                         }`}
                                         aria-label={`View image ${index + 1} of ${product.name}`}
                                     >
-                                        <img src={url} alt={`${product.name} thumbnail ${index + 1}`} referrerPolicy="no-referrer" className="w-full h-full object-cover"/>
+                                        <img src={url} alt={`${product.name} thumbnail ${index + 1}`} className="w-full h-full object-cover"/>
                                     </button>
                                 ))}
                             </div>
@@ -170,7 +170,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                                       <img 
                                         src={recProduct.imageUrls[0]} 
                                         alt={recProduct.name} 
-                                        referrerPolicy="no-referrer"
                                         className="w-full h-full object-cover" 
                                       />
                                     </div>

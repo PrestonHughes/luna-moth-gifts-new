@@ -48,7 +48,7 @@ const CartPanel: React.FC<CartPanelProps> = ({ isOpen, onClose, cartItems, onUpd
               <ul className="divide-y divide-slate-200">
                 {cartItems.map(item => (
                   <li key={item.cartId} className="py-4 flex gap-4">
-                    <img src={item.imageUrls[0]} alt={item.name} referrerPolicy="no-referrer" className="w-24 h-24 rounded-md object-cover" />
+                    <img src={item.imageUrls[0]} alt={item.name} className="w-24 h-24 rounded-md object-cover" />
                     <div className="flex-grow flex flex-col">
                       <h3 className="font-bold text-lg text-slate-800">{item.name}</h3>
                       {item.selectedVariant.size !== 'Standard' && (
