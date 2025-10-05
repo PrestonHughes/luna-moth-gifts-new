@@ -146,7 +146,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ user, onLogoutClick, onUpdate
                         <ul className="space-y-3">
                             {order.items.map(item => (
                                 <li key={item.productId} className="flex items-center gap-4">
-                                    <img src={item.imageUrl} alt={item.name} className="w-16 h-16 rounded-md object-cover" />
+                                    <img src={item.imageUrl} alt={item.name} referrerPolicy="no-referrer" className="w-16 h-16 rounded-md object-cover" />
                                     <div className="flex-grow">
                                         <p className="font-semibold text-slate-800">{item.name}</p>
                                         <p className="text-sm text-slate-500">{item.size}</p>
