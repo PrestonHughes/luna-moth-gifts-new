@@ -68,6 +68,22 @@ This document provides a comprehensive overview of the Luna Moth Gifts web appli
 - This decision was made to resolve persistent module import errors and ensure stability. All Firebase-related code in `services/firebaseService.ts` and `services/firestoreService.ts` uses the v8 syntax (e.g., `firebase.auth()`, `db.collection('users').doc(uid)`).
 - **Future work on Firebase must adhere to this v8 compat pattern to avoid regressions.**
 
+### **Firebase Authorization Domain Configuration (CRITICAL)**
+
+- **Issue Encountered (October 2025):** After deployment to Cloud Run, authentication was failing with error `Firebase: Error (auth/unauthorized-domain)`.
+- **Root Cause:** Firebase Authentication requires all domains that will use Firebase Auth to be explicitly whitelisted in the Firebase Console. By default, only `localhost` and the Firebase-provided domains are authorized.
+- **Solution:** The Cloud Run deployment URL must be added to Firebase's authorized domains:
+  1. Navigate to Firebase Console → Authentication → Settings → Authorized domains
+  2. Click "Add domain"
+  3. Add the Cloud Run URL (format: `luna-moth-gifts-[hash].a.run.app`)
+  4. The domain should be added WITHOUT `https://` or any path - just the domain itself
+- **Important Notes:**
+  - This configuration must be done manually in the Firebase Console - it cannot be automated via Cloud Build
+  - If the Cloud Run URL changes (e.g., deploying to a new region or service), the new domain must be added
+  - For local development, ensure `localhost` is in the authorized domains list
+  - This issue will only manifest in the deployed environment, not in local development
+- **Related:** The project uses Firebase project `luna-moth-gifts` (project ID: `luna-moth-gifts`). There is a separate project `LunaMothGifts` (project ID: `gen-lang-client-0378156439`) which is used for Gemini API access in Google AI Studio.
+
 ### **State Management**
 
 - Global application state (e.g., current user, cart items, open modals) is managed in the root `App.tsx` component using React's built-in hooks (`useState`, `useEffect`).

@@ -58,8 +58,8 @@ const AppContent: React.FC = () => {
             date: '2023-10-26',
             total: 75.00,
             items: [
-                { productId: '2', name: 'Rose Quartz', size: 'Standard', quantity: 1, price: 25.00, imageUrl: 'https://source.unsplash.com/400x400/?rose,quartz' },
-                { productId: '5', name: 'Citrine Geode', size: 'Standard', quantity: 1, price: 50.00, imageUrl: 'https://source.unsplash.com/400x400/?citrine,geode' }
+                { productId: '2', name: 'Rose Quartz', size: 'Standard', quantity: 1, price: 25.00, imageUrl: 'https://images.unsplash.com/photo-1604164303426-a6f44a3b4c4a?q=80&w=400&h=400&fit=crop' },
+                { productId: '5', name: 'Citrine Geode', size: 'Standard', quantity: 1, price: 50.00, imageUrl: 'https://images.unsplash.com/photo-1607870716491-dfe9b3137a82?q=80&w=400&h=400&fit=crop' }
             ]
         },
         {
@@ -67,8 +67,8 @@ const AppContent: React.FC = () => {
             date: '2023-08-15',
             total: 53.00,
             items: [
-                { productId: '6', name: 'Selenite Wand', size: 'Standard', quantity: 1, price: 18.00, imageUrl: 'https://source.unsplash.com/400x400/?selenite,wand' },
-                { productId: '7', name: 'Labradorite Palm Stone', size: 'Medium', quantity: 1, price: 35.00, imageUrl: 'https://source.unsplash.com/400x400/?labradorite' }
+                { productId: '6', name: 'Selenite Wand', size: 'Standard', quantity: 1, price: 18.00, imageUrl: 'https://images.unsplash.com/photo-1628151128913-911946a4e320?q=80&w=400&h=400&fit=crop' },
+                { productId: '7', name: 'Labradorite Palm Stone', size: 'Medium', quantity: 1, price: 35.00, imageUrl: 'https://images.unsplash.com/photo-1618688487375-3453b0a701d3?q=80&w=400&h=400&fit=crop' }
             ]
         }
     ];
