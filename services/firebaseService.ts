@@ -1,17 +1,18 @@
-// FIX: Changed to namespace imports to resolve module resolution issues with Firebase SDK.
-import * as firebaseAppNs from 'firebase/app';
-import * as firebaseAuthNs from 'firebase/auth';
+
+// Fix: Use Firebase v8 compat imports to match the likely installed SDK version.
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 import { firebaseConfig } from '../firebaseConfig';
 
-let app: firebaseAppNs.FirebaseApp | null = null;
-let auth: firebaseAuthNs.Auth | null = null;
+let app: firebase.app.App | null = null;
+let auth: firebase.auth.Auth | null = null;
 let isInitialized = false;
 
 /**
  * Lazily initializes and returns the Firebase App instance.
  * Returns null if the configuration (e.g., API key) is missing or a placeholder.
  */
-export const getFirebaseApp = (): firebaseAppNs.FirebaseApp | null => {
+export const getFirebaseApp = (): firebase.app.App | null => {
     if (isInitialized) {
         return app;
     }
@@ -23,7 +24,12 @@ export const getFirebaseApp = (): firebaseAppNs.FirebaseApp | null => {
         return null;
     }
     
-    app = !firebaseAppNs.getApps().length ? firebaseAppNs.initializeApp(firebaseConfig) : firebaseAppNs.getApp();
+    // Fix: Use v8 compat initialization check.
+    if (!firebase.apps.length) {
+        app = firebase.initializeApp(firebaseConfig);
+    } else {
+        app = firebase.app();
+    }
     return app;
 };
 
@@ -31,13 +37,14 @@ export const getFirebaseApp = (): firebaseAppNs.FirebaseApp | null => {
 /**
  * Returns the Auth instance, or null if Firebase is not initialized.
  */
-const getFirebaseAuth = (): firebaseAuthNs.Auth | null => {
+const getFirebaseAuth = (): firebase.auth.Auth | null => {
     if (auth) return auth;
 
     const firebaseApp = getFirebaseApp();
     if (!firebaseApp) return null;
     
-    auth = firebaseAuthNs.getAuth(firebaseApp);
+    // Fix: Use v8 compat auth instance retrieval.
+    auth = firebase.auth(firebaseApp);
     return auth;
 };
 
@@ -47,7 +54,8 @@ const getFirebaseAuth = (): firebaseAuthNs.Auth | null => {
  * @param callback - The function to call with the Firebase user object or null.
  * @returns An unsubscribe function to clean up the listener.
  */
-export const onAuthStateChangedListener = (callback: (user: firebaseAuthNs.User | null) => void) => {
+// Fix: Use firebase.User type from the compat SDK.
+export const onAuthStateChangedListener = (callback: (user: firebase.User | null) => void) => {
     const authInstance = getFirebaseAuth();
     if (!authInstance) {
         // If Firebase isn't initialized, immediately call back with no user
@@ -55,7 +63,8 @@ export const onAuthStateChangedListener = (callback: (user: firebaseAuthNs.User 
         callback(null);
         return () => {};
     }
-    return firebaseAuthNs.onAuthStateChanged(authInstance, callback);
+    // Fix: Use v8 compat onAuthStateChanged method.
+    return authInstance.onAuthStateChanged(callback);
 };
 
 /**
@@ -111,7 +120,8 @@ export const signUpWithEmail = async (email: string, password: string) => {
     if (!authInstance) throw new Error("Firebase is not configured in this environment.");
 
     try {
-        const userCredential = await firebaseAuthNs.createUserWithEmailAndPassword(authInstance, email, password);
+        // Fix: Use v8 compat createUserWithEmailAndPassword method.
+        const userCredential = await authInstance.createUserWithEmailAndPassword(email, password);
         // The onAuthStateChanged listener in App.tsx will handle creating the user profile.
         return userCredential;
     } catch (error) {
@@ -130,7 +140,8 @@ export const signInWithEmail = async (email: string, password: string) => {
     if (!authInstance) throw new Error("Firebase is not configured in this environment.");
 
     try {
-        return await firebaseAuthNs.signInWithEmailAndPassword(authInstance, email, password);
+        // Fix: Use v8 compat signInWithEmailAndPassword method.
+        return await authInstance.signInWithEmailAndPassword(email, password);
     } catch (error) {
         throw new Error(mapAuthError(error));
     }
@@ -143,5 +154,6 @@ export const signInWithEmail = async (email: string, password: string) => {
 export const signOutUser = async () => {
     const authInstance = getFirebaseAuth();
     if (!authInstance) return;
-    return await firebaseAuthNs.signOut(authInstance);
+    // Fix: Use v8 compat signOut method.
+    return await authInstance.signOut();
 };
