@@ -1,24 +1,17 @@
-import { initializeApp, getApp, getApps, type FirebaseApp } from 'firebase/app';
-import { 
-    getAuth, 
-    onAuthStateChanged,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    type User as FirebaseUser,
-    type Auth,
-} from 'firebase/auth';
+// FIX: Changed to namespace imports to resolve module resolution issues with Firebase SDK.
+import * as firebaseAppNs from 'firebase/app';
+import * as firebaseAuthNs from 'firebase/auth';
 import { firebaseConfig } from '../firebaseConfig';
 
-let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
+let app: firebaseAppNs.FirebaseApp | null = null;
+let auth: firebaseAuthNs.Auth | null = null;
 let isInitialized = false;
 
 /**
  * Lazily initializes and returns the Firebase App instance.
  * Returns null if the configuration (e.g., API key) is missing or a placeholder.
  */
-export const getFirebaseApp = (): FirebaseApp | null => {
+export const getFirebaseApp = (): firebaseAppNs.FirebaseApp | null => {
     if (isInitialized) {
         return app;
     }
@@ -30,7 +23,7 @@ export const getFirebaseApp = (): FirebaseApp | null => {
         return null;
     }
     
-    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    app = !firebaseAppNs.getApps().length ? firebaseAppNs.initializeApp(firebaseConfig) : firebaseAppNs.getApp();
     return app;
 };
 
@@ -38,13 +31,13 @@ export const getFirebaseApp = (): FirebaseApp | null => {
 /**
  * Returns the Auth instance, or null if Firebase is not initialized.
  */
-const getFirebaseAuth = (): Auth | null => {
+const getFirebaseAuth = (): firebaseAuthNs.Auth | null => {
     if (auth) return auth;
 
     const firebaseApp = getFirebaseApp();
     if (!firebaseApp) return null;
     
-    auth = getAuth(firebaseApp);
+    auth = firebaseAuthNs.getAuth(firebaseApp);
     return auth;
 };
 
@@ -54,7 +47,7 @@ const getFirebaseAuth = (): Auth | null => {
  * @param callback - The function to call with the Firebase user object or null.
  * @returns An unsubscribe function to clean up the listener.
  */
-export const onAuthStateChangedListener = (callback: (user: FirebaseUser | null) => void) => {
+export const onAuthStateChangedListener = (callback: (user: firebaseAuthNs.User | null) => void) => {
     const authInstance = getFirebaseAuth();
     if (!authInstance) {
         // If Firebase isn't initialized, immediately call back with no user
@@ -62,36 +55,49 @@ export const onAuthStateChangedListener = (callback: (user: FirebaseUser | null)
         callback(null);
         return () => {};
     }
-    return onAuthStateChanged(authInstance, callback);
+    return firebaseAuthNs.onAuthStateChanged(authInstance, callback);
 };
 
 /**
  * Maps Firebase authentication error codes to more user-friendly messages.
+ * This is now more robust to handle both Firebase errors and generic configuration errors.
  * @param error - The error object from Firebase.
  * @returns A user-friendly error message string.
  */
-// Fix: Changed error type from AuthError to any to resolve property 'code' not found error.
 const mapAuthError = (error: any): string => {
-    switch (error.code) {
-        case 'auth/email-already-in-use':
-            return 'An account with this email already exists.';
-        case 'auth/invalid-email':
-            return 'The email address is not valid.';
-        case 'auth/operation-not-allowed':
-            return 'Email/password accounts are not enabled.';
-        case 'auth/weak-password':
-            return 'The password is too weak. Please use at least 6 characters.';
-        case 'auth/user-disabled':
-            return 'This user account has been disabled.';
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-        case 'auth/invalid-credential':
-             return 'Invalid email or password.';
-        default:
-            console.error('Unhandled Firebase Auth Error:', error);
-            return 'An unexpected error occurred. Please try again.';
+    // If it's a Firebase error with a code, handle it specifically.
+    if (error && error.code) {
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                return 'An account with this email already exists.';
+            case 'auth/invalid-email':
+                return 'The email address is not valid.';
+            case 'auth/operation-not-allowed':
+                return 'Email/password accounts are not enabled in the Firebase console.';
+            case 'auth/weak-password':
+                return 'The password is too weak. Please use at least 6 characters.';
+            case 'auth/user-disabled':
+                return 'This user account has been disabled.';
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential':
+                return 'Invalid email or password.';
+            default:
+                console.error('Unhandled Firebase Auth Error:', error);
+                return `An unexpected error occurred: ${error.message}`;
+        }
     }
+
+    // If it's a generic error from our setup (like missing config), return its message directly.
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    // Fallback for unknown error types.
+    console.error('Unknown error during authentication:', error);
+    return 'An unexpected error occurred. Please try again.';
 };
+
 
 /**
  * Signs up a new user with an email and password.
@@ -105,7 +111,7 @@ export const signUpWithEmail = async (email: string, password: string) => {
     if (!authInstance) throw new Error("Firebase is not configured in this environment.");
 
     try {
-        const userCredential = await createUserWithEmailAndPassword(authInstance, email, password);
+        const userCredential = await firebaseAuthNs.createUserWithEmailAndPassword(authInstance, email, password);
         // The onAuthStateChanged listener in App.tsx will handle creating the user profile.
         return userCredential;
     } catch (error) {
@@ -124,7 +130,7 @@ export const signInWithEmail = async (email: string, password: string) => {
     if (!authInstance) throw new Error("Firebase is not configured in this environment.");
 
     try {
-        return await signInWithEmailAndPassword(authInstance, email, password);
+        return await firebaseAuthNs.signInWithEmailAndPassword(authInstance, email, password);
     } catch (error) {
         throw new Error(mapAuthError(error));
     }
@@ -137,5 +143,5 @@ export const signInWithEmail = async (email: string, password: string) => {
 export const signOutUser = async () => {
     const authInstance = getFirebaseAuth();
     if (!authInstance) return;
-    return await signOut(authInstance);
+    return await firebaseAuthNs.signOut(authInstance);
 };
