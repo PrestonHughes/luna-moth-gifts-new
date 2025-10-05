@@ -58,8 +58,8 @@ const AppContent: React.FC = () => {
             date: '2023-10-26',
             total: 75.00,
             items: [
-                { productId: '2', name: 'Rose Quartz', size: 'Standard', quantity: 1, price: 25.00, imageUrl: 'https://picsum.photos/seed/rosequartz/400/400' },
-                { productId: '5', name: 'Citrine Geode', size: 'Standard', quantity: 1, price: 50.00, imageUrl: 'https://picsum.photos/seed/citrine/400/400' }
+                { productId: '2', name: 'Rose Quartz', size: 'Standard', quantity: 1, price: 25.00, imageUrl: 'https://source.unsplash.com/400x400/?rose,quartz' },
+                { productId: '5', name: 'Citrine Geode', size: 'Standard', quantity: 1, price: 50.00, imageUrl: 'https://source.unsplash.com/400x400/?citrine,geode' }
             ]
         },
         {
@@ -67,8 +67,8 @@ const AppContent: React.FC = () => {
             date: '2023-08-15',
             total: 53.00,
             items: [
-                { productId: '6', name: 'Selenite Wand', size: 'Standard', quantity: 1, price: 18.00, imageUrl: 'https://picsum.photos/seed/selenite/400/400' },
-                { productId: '7', name: 'Labradorite Palm Stone', size: 'Medium', quantity: 1, price: 35.00, imageUrl: 'https://picsum.photos/seed/labradorite/400/400' }
+                { productId: '6', name: 'Selenite Wand', size: 'Standard', quantity: 1, price: 18.00, imageUrl: 'https://source.unsplash.com/400x400/?selenite,wand' },
+                { productId: '7', name: 'Labradorite Palm Stone', size: 'Medium', quantity: 1, price: 35.00, imageUrl: 'https://source.unsplash.com/400x400/?labradorite' }
             ]
         }
     ];

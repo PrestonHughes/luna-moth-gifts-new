@@ -8,9 +8,9 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 45.00 }],
     description: 'A beautiful cluster known for its calming and spiritual properties.',
     imageUrls: [
-        'https://picsum.photos/seed/amethyst/400/400',
-        'https://picsum.photos/seed/amethyst2/400/400',
-        'https://picsum.photos/seed/amethyst3/400/400'
+        'https://source.unsplash.com/400x400/?amethyst,cluster',
+        'https://source.unsplash.com/400x400/?amethyst,crystal,geode',
+        'https://source.unsplash.com/400x400/?purple,geode'
     ],
     category: 'Clusters',
     isFeatured: true,
@@ -21,8 +21,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 25.00 }],
     description: 'The stone of universal love, encourages compassion and peace.',
     imageUrls: [
-        'https://picsum.photos/seed/rosequartz/400/400',
-        'https://picsum.photos/seed/rosequartz2/400/400',
+        'https://source.unsplash.com/400x400/?rose,quartz',
+        'https://source.unsplash.com/400x400/?rose,quartz,crystal'
     ],
     category: 'Tumbled Stones',
     isFeatured: true,
@@ -33,9 +33,9 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 30.00 }],
     description: 'A powerful grounding stone, providing protection against negativity.',
     imageUrls: [
-        'https://picsum.photos/seed/tourmaline/400/400',
-        'https://picsum.photos/seed/tourmaline2/400/400',
-        'https://picsum.photos/seed/tourmaline3/400/400',
+        'https://source.unsplash.com/400x400/?black,tourmaline',
+        'https://source.unsplash.com/400x400/?tourmaline,raw',
+        'https://source.unsplash.com/400x400/?black,crystal'
     ],
     category: 'Raw Stones',
     isFeatured: true,
@@ -46,8 +46,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 20.00 }],
     description: 'Known as the "master healer," it amplifies energy and thought.',
     imageUrls: [
-        'https://picsum.photos/seed/clearquartz/400/400',
-        'https://picsum.photos/seed/clearquartz2/400/400',
+        'https://source.unsplash.com/400x400/?clear,quartz,point',
+        'https://source.unsplash.com/400x400/?quartz,crystal,wand'
     ],
     category: 'Points & Wands',
     isFeatured: true,
@@ -58,9 +58,9 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 55.00 }],
     description: 'Carries the power of the sun, promoting positivity and joy.',
     imageUrls: [
-        'https://picsum.photos/seed/citrine/400/400',
-        'https://picsum.photos/seed/citrine2/400/400',
-        'https://picsum.photos/seed/citrine3/400/400',
+        'https://source.unsplash.com/400x400/?citrine,geode',
+        'https://source.unsplash.com/400x400/?citrine,crystal',
+        'https://source.unsplash.com/400x400/?yellow,geode,cluster'
     ],
     category: 'Geodes',
     isFeatured: true,
@@ -71,8 +71,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 18.00 }],
     description: 'Used for cleansing energy from other crystals and spaces.',
     imageUrls: [
-        'https://picsum.photos/seed/selenite/400/400',
-        'https://picsum.photos/seed/selenite2/400/400',
+        'https://source.unsplash.com/400x400/?selenite,wand',
+        'https://source.unsplash.com/400x400/?selenite,crystal'
     ],
     category: 'Points & Wands',
     isFeatured: true,
@@ -87,9 +87,9 @@ export const products: Product[] = [
     ],
     description: 'A stone of transformation, it enhances strength of will and a sense of inner worth.',
     imageUrls: [
-        'https://picsum.photos/seed/labradorite/400/400',
-        'https://picsum.photos/seed/labradorite2/400/400',
-        'https://picsum.photos/seed/labradorite3/400/400',
+        'https://source.unsplash.com/400x400/?labradorite',
+        'https://source.unsplash.com/400x400/?labradorite,stone',
+        'https://source.unsplash.com/400x400/?labradorite,crystal'
     ],
     category: 'Palm Stones',
     isFeatured: true,
@@ -100,8 +100,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 60.00 }],
     description: 'A symbol of wisdom and truth, it encourages self-awareness and self-expression.',
     imageUrls: [
-        'https://picsum.photos/seed/lapislazuli/400/400',
-        'https://picsum.photos/seed/lapislazuli2/400/400',
+        'https://source.unsplash.com/400x400/?lapis,lazuli,sphere',
+        'https://source.unsplash.com/400x400/?lapis,lazuli,crystal'
     ],
     category: 'Spheres',
     isFeatured: true,
@@ -112,9 +112,9 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 48.00 }],
     description: 'Known as the stone of transformation, it absorbs negative energies and pollutants.',
     imageUrls: [
-        'https://picsum.photos/seed/malachite/400/400',
-        'https://picsum.photos/seed/malachite2/400/400',
-        'https://picsum.photos/seed/malachite3/400/400',
+        'https://source.unsplash.com/400x400/?malachite,stone',
+        'https://source.unsplash.com/400x400/?malachite,crystal',
+        'https://source.unsplash.com/400x400/?green,gemstone'
     ],
     category: 'Tumbled Stones',
   },
@@ -124,8 +124,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 75.00 }],
     description: 'A strongly protective stone, it forms a shield against negativity.',
     imageUrls: [
-        'https://picsum.photos/seed/obsidian/400/400',
-        'https://picsum.photos/seed/obsidian2/400/400',
+        'https://source.unsplash.com/400x400/?obsidian,mirror',
+        'https://source.unsplash.com/400x400/?obsidian,scrying'
     ],
     category: 'Decorative',
   },
@@ -135,8 +135,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 22.00 }],
     description: 'Highly protective and stabilizing, useful for grounding and harmonizing spiritual energy.',
     imageUrls: [
-        'https://picsum.photos/seed/fluorite/400/400',
-        'https://picsum.photos/seed/fluorite2/400/400',
+        'https://source.unsplash.com/400x400/?fluorite,octahedron',
+        'https://source.unsplash.com/400x400/?fluorite,crystal'
     ],
     category: 'Geometric',
   },
@@ -146,8 +146,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 28.00 }],
     description: 'A stone of protection, Tiger\'s Eye may also bring good luck to the wearer.',
     imageUrls: [
-        'https://picsum.photos/seed/tigerseye/400/400',
-        'https://picsum.photos/seed/tigerseye2/400/400',
+        'https://source.unsplash.com/400x400/?tigers,eye,stone',
+        'https://source.unsplash.com/400x400/?tiger,eye,gemstone'
     ],
     category: 'Tumbled Stones',
   },
@@ -157,8 +157,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 24.00 }],
     description: 'A stone of opportunity, thought to be the luckiest of all crystals.',
     imageUrls: [
-        'https://picsum.photos/seed/aventurine/400/400',
-        'https://picsum.photos/seed/aventurine2/400/400',
+        'https://source.unsplash.com/400x400/?green,aventurine',
+        'https://source.unsplash.com/400x400/?aventurine,tumbled'
     ],
     category: 'Tumbled Stones',
   },
@@ -168,8 +168,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 26.00 }],
     description: 'A stabilizing stone, Carnelian restores vitality and motivation, and stimulates creativity.',
     imageUrls: [
-        'https://picsum.photos/seed/carnelian/400/400',
-        'https://picsum.photos/seed/carnelian2/400/400',
+        'https://source.unsplash.com/400x400/?carnelian,stone',
+        'https://source.unsplash.com/400x400/?carnelian,tumbled'
     ],
     category: 'Tumbled Stones',
   },
@@ -179,8 +179,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 32.00 }],
     description: 'An excellent grounding stone, Smoky Quartz gently neutralises negative vibrations.',
     imageUrls: [
-        'https://picsum.photos/seed/smokyquartz/400/400',
-        'https://picsum.photos/seed/smokyquartz2/400/400',
+        'https://source.unsplash.com/400x400/?smoky,quartz,point',
+        'https://source.unsplash.com/400x400/?smoky,quartz,crystal'
     ],
     category: 'Points & Wands',
   },
@@ -190,9 +190,9 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 40.00 }],
     description: 'Also known as "Fool\'s Gold," Pyrite is a powerful protection stone which shields and protects against all forms of negative vibrations.',
     imageUrls: [
-        'https://picsum.photos/seed/pyrite/400/400',
-        'https://picsum.photos/seed/pyrite2/400/400',
-        'https://picsum.photos/seed/pyrite3/400/400',
+        'https://source.unsplash.com/400x400/?pyrite,cluster',
+        'https://source.unsplash.com/400x400/?pyrite,geode',
+        'https://source.unsplash.com/400x400/?fools,gold'
     ],
     category: 'Clusters',
     isFeatured: true,
@@ -203,8 +203,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 38.00 }],
     description: 'Wear the calming energy of Amethyst with this beautiful beaded bracelet.',
     imageUrls: [
-        'https://picsum.photos/seed/amethystbracelet/400/400',
-        'https://picsum.photos/seed/amethystbracelet2/400/400',
+        'https://source.unsplash.com/400x400/?amethyst,bracelet',
+        'https://source.unsplash.com/400x400/?crystal,bracelet,jewelry'
     ],
     category: 'Jewelry',
   },
@@ -214,8 +214,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 50.00 }],
     description: 'A calming stone, Howlite can help reduce levels of stress and anger.',
     imageUrls: [
-        'https://picsum.photos/seed/howlite/400/400',
-        'https://picsum.photos/seed/howlite2/400/400',
+        'https://source.unsplash.com/400x400/?howlite,sphere',
+        'https://source.unsplash.com/400x400/?howlite,crystal'
     ],
     category: 'Spheres',
   },
@@ -225,8 +225,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 29.00 }],
     description: 'Encourages rational thought, objectivity, truth and intuition.',
     imageUrls: [
-        'https://picsum.photos/seed/sodalite/400/400',
-        'https://picsum.photos/seed/sodalite2/400/400',
+        'https://source.unsplash.com/400x400/?sodalite,raw',
+        'https://source.unsplash.com/400x400/?sodalite,stone'
     ],
     category: 'Raw Stones',
   },
@@ -236,8 +236,8 @@ export const products: Product[] = [
     variants: [{ size: 'Medium', price: 33.00 }],
     description: 'Known as the “supreme nurturer”, it sustains and supports through times of stress.',
     imageUrls: [
-        'https://picsum.photos/seed/redjasper/400/400',
-        'https://picsum.photos/seed/redjasper2/400/400',
+        'https://source.unsplash.com/400x400/?red,jasper',
+        'https://source.unsplash.com/400x400/?red,jasper,palm,stone'
     ],
     category: 'Palm Stones',
   },
@@ -247,8 +247,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 65.00 }],
     description: 'A stone for “new beginnings”, Moonstone is a stone of inner growth and strength.',
     imageUrls: [
-        'https://picsum.photos/seed/moonstone/400/400',
-        'https://picsum.photos/seed/moonstone2/400/400',
+        'https://source.unsplash.com/400x400/?moonstone,pendant',
+        'https://source.unsplash.com/400x400/?moonstone,jewelry'
     ],
     category: 'Jewelry',
     isFeatured: true,
@@ -259,8 +259,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 20.00 }],
     description: 'Said to contain a unique spirit guardian, each one is different.',
     imageUrls: [
-        'https://picsum.photos/seed/desertrose/400/400',
-        'https://picsum.photos/seed/desertrose2/400/400',
+        'https://source.unsplash.com/400x400/?desert,rose,selenite',
+        'https://source.unsplash.com/400x400/?desert,rose,crystal'
     ],
     category: 'Clusters',
   },
@@ -270,8 +270,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 34.00 }],
     description: 'Encourages a feeling of joy and elevated spirits. Helps you to release negative feelings.',
     imageUrls: [
-        'https://picsum.photos/seed/oceanjasper/400/400',
-        'https://picsum.photos/seed/oceanjasper2/400/400',
+        'https://source.unsplash.com/400x400/?ocean,jasper',
+        'https://source.unsplash.com/400x400/?ocean,jasper,tumbled'
     ],
     category: 'Tumbled Stones',
   },
@@ -281,8 +281,8 @@ export const products: Product[] = [
     variants: [{ size: 'Standard', price: 28.00 }],
     description: 'Excellent for attunement and meditation. It is tranquilizing and a powerful transmitter of high-frequency energies.',
     imageUrls: [
-        'https://picsum.photos/seed/kyanite/400/400',
-        'https://picsum.photos/seed/kyanite2/400/400',
+        'https://source.unsplash.com/400x400/?kyanite,blade',
+        'https://source.unsplash.com/400x400/?kyanite,raw'
     ],
     category: 'Raw Stones',
   },

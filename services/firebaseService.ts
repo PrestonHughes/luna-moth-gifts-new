@@ -1,4 +1,3 @@
-
 // Fix: Use Firebase v8 compat imports to match the likely installed SDK version.
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -9,14 +8,44 @@ let auth: firebase.auth.Auth | null = null;
 let isInitialized = false;
 
 /**
+ * Validates the Firebase configuration object before a user action.
+ * Throws a user-friendly error if keys are missing, and logs technical details.
+ */
+const validateFirebaseConfig = () => {
+    const missingKeys = Object.entries(firebaseConfig)
+        .filter(([, value]) => typeof value === 'string' && value.startsWith('MISSING_'))
+        .map(([key]) => key);
+
+    if (missingKeys.length > 0) {
+        // Log the detailed error for developers to see in the console.
+        console.error(`Firebase setup is incomplete. The following keys were not found: ${missingKeys.join(', ')}.`);
+        // Throw a user-friendly error to be displayed in the UI.
+        const userMessage = "Authentication is not available. This is expected in the IDE. If you see this on the live website, the configuration is incomplete.";
+        throw new Error(userMessage);
+    }
+};
+
+
+/**
  * Lazily initializes and returns the Firebase App instance.
- * Returns null if the configuration is incomplete or initialization fails.
+ * In an IDE environment (where config keys are missing), it will return null
+ * without throwing an error, allowing the app to run in a degraded state on load.
  */
 export const getFirebaseApp = (): firebase.app.App | null => {
     if (isInitialized) {
         return app;
     }
     isInitialized = true; // Attempt initialization only once.
+
+    const hasMissingKeys = Object.values(firebaseConfig).some(
+        value => typeof value === 'string' && value.startsWith('MISSING_')
+    );
+
+    if (hasMissingKeys) {
+        // This is the expected path in the IDE. Firebase features will be disabled.
+        console.log("Firebase config keys not found. Running in limited IDE mode.");
+        return null;
+    }
 
     try {
         // Fix: Use v8 compat initialization check.
@@ -26,7 +55,7 @@ export const getFirebaseApp = (): firebase.app.App | null => {
             app = firebase.app();
         }
     } catch (error) {
-        console.error("Failed to initialize Firebase. This is expected in the IDE if using placeholder keys. In a deployed environment, check your build variables.", error);
+        console.error("Firebase initialization failed. This may be due to an invalid configuration in the deployed environment.", error);
         app = null;
     }
     
@@ -57,12 +86,13 @@ const getFirebaseAuth = (): firebase.auth.Auth | null => {
 // Fix: Use firebase.User type from the compat SDK.
 export const onAuthStateChangedListener = (callback: (user: firebase.User | null) => void) => {
     const authInstance = getFirebaseAuth();
+    
+    // In IDE mode, authInstance will be null. The app will behave as if the user is logged out.
     if (!authInstance) {
-        // If Firebase isn't initialized, immediately call back with no user
-        // and return a no-op unsubscribe function.
         callback(null);
-        return () => {};
+        return () => {}; // Return a no-op unsubscribe function
     }
+    
     // Fix: Use v8 compat onAuthStateChanged method.
     return authInstance.onAuthStateChanged(callback);
 };
@@ -74,6 +104,11 @@ export const onAuthStateChangedListener = (callback: (user: firebase.User | null
  * @returns A user-friendly error message string.
  */
 const mapAuthError = (error: any): string => {
+    // If it's a generic error with a message (like our custom config error), use it directly.
+    if (error instanceof Error && !('code' in error)) {
+        return error.message;
+    }
+
     // If it's a Firebase error with a code, handle it specifically.
     if (error && error.code) {
         switch (error.code) {
@@ -101,11 +136,6 @@ const mapAuthError = (error: any): string => {
         }
     }
 
-    // If it's a generic error from our setup (like missing config), return its message directly.
-    if (error instanceof Error) {
-        return error.message;
-    }
-
     // Fallback for unknown error types.
     console.error('Unknown error during authentication:', error);
     return 'An unexpected error occurred. Please try again.';
@@ -120,10 +150,11 @@ const mapAuthError = (error: any): string => {
  * @returns A promise that resolves with the created user's credentials.
  */
 export const signUpWithEmail = async (email: string, password: string) => {
-    const authInstance = getFirebaseAuth();
-    if (!authInstance) throw new Error("Firebase is not properly configured. Check the browser console for details.");
-
     try {
+        validateFirebaseConfig();
+        const authInstance = getFirebaseAuth();
+        if (!authInstance) throw new Error("Firebase is not available.");
+
         // Fix: Use v8 compat createUserWithEmailAndPassword method.
         const userCredential = await authInstance.createUserWithEmailAndPassword(email, password);
         // The onAuthStateChanged listener in App.tsx will handle creating the user profile.
@@ -140,10 +171,11 @@ export const signUpWithEmail = async (email: string, password: string) => {
  * @returns A promise that resolves with the signed-in user's credentials.
  */
 export const signInWithEmail = async (email: string, password: string) => {
-    const authInstance = getFirebaseAuth();
-    if (!authInstance) throw new Error("Firebase is not properly configured. Check the browser console for details.");
+     try {
+        validateFirebaseConfig();
+        const authInstance = getFirebaseAuth();
+        if (!authInstance) throw new Error("Firebase is not available.");
 
-    try {
         // Fix: Use v8 compat signInWithEmailAndPassword method.
         return await authInstance.signInWithEmailAndPassword(email, password);
     } catch (error) {
