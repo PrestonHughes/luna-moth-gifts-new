@@ -1,28 +1,6 @@
 
-// Fix: Use Firebase v8 compat imports to match the likely installed SDK version.
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import { getFirebaseApp } from './firebaseService';
+import { db } from '../firebase';
 import type { User, CartItem } from '../types';
-
-let db: firebase.firestore.Firestore | null = null;
-let isDbInitialized = false;
-
-/**
- * Lazily initializes and returns the Firestore instance.
- * Returns null if Firebase app is not available.
- */
-const getDb = (): firebase.firestore.Firestore | null => {
-    if (isDbInitialized) return db;
-    isDbInitialized = true;
-
-    const app = getFirebaseApp();
-    if (app) {
-        // Fix: Use v8 compat firestore instance retrieval.
-        db = app.firestore();
-    }
-    return db;
-};
 
 /**
  * Fetches a user's profile from Firestore.
@@ -30,15 +8,12 @@ const getDb = (): firebase.firestore.Firestore | null => {
  * @returns The user's profile data or null if not found or DB is unavailable.
  */
 export const getUserProfile = async (uid: string): Promise<User | null> => {
-    const firestoreDb = getDb();
-    if (!firestoreDb) return null;
+    if (!db) return null;
 
-    // Fix: Use v8 compat API for document fetching.
-    const userDocRef = firestoreDb.collection('users').doc(uid);
+    const userDocRef = db.collection('users').doc(uid);
     const userDocSnap = await userDocRef.get();
 
     if (userDocSnap.exists) {
-        // We can safely cast here because we control what we save.
         return userDocSnap.data() as User;
     } else {
         console.log("No such user profile!");
@@ -52,11 +27,9 @@ export const getUserProfile = async (uid: string): Promise<User | null> => {
  * @param user The user object containing uid and email.
  */
 export const createUserProfile = async (user: { uid: string; email: string; }) => {
-    const firestoreDb = getDb();
-    if (!firestoreDb) return;
+    if (!db) return;
 
-    // Fix: Use v8 compat API for setting a document.
-    const userDocRef = firestoreDb.collection('users').doc(user.uid);
+    const userDocRef = db.collection('users').doc(user.uid);
     // Create a new user profile with default/initial values
     const newUserProfile: User = {
         uid: user.uid,
@@ -74,11 +47,9 @@ export const createUserProfile = async (user: { uid: string; email: string; }) =
  * @param data An object containing the fields to update (e.g., { firstName: 'Jane' }).
  */
 export const updateUserProfile = async (uid: string, data: Partial<User>) => {
-    const firestoreDb = getDb();
-    if (!firestoreDb) return;
+    if (!db) return;
 
-    // Fix: Use v8 compat API for updating a document.
-    const userDocRef = firestoreDb.collection('users').doc(uid);
+    const userDocRef = db.collection('users').doc(uid);
     await userDocRef.update(data);
 };
 
@@ -88,11 +59,9 @@ export const updateUserProfile = async (uid: string, data: Partial<User>) => {
  * @returns An array of CartItem objects or an empty array if not found or DB is unavailable.
  */
 export const getCart = async (uid: string): Promise<CartItem[]> => {
-    const firestoreDb = getDb();
-    if (!firestoreDb) return [];
+    if (!db) return [];
 
-    // Fix: Use v8 compat API for document fetching.
-    const cartDocRef = firestoreDb.collection('carts').doc(uid);
+    const cartDocRef = db.collection('carts').doc(uid);
     const cartDocSnap = await cartDocRef.get();
 
     if (cartDocSnap.exists && (cartDocSnap.data() as any)?.items) {
@@ -108,10 +77,8 @@ export const getCart = async (uid: string): Promise<CartItem[]> => {
  * @param cartItems The current array of items in the cart.
  */
 export const updateCart = async (uid: string, cartItems: CartItem[]) => {
-    const firestoreDb = getDb();
-    if (!firestoreDb) return;
+    if (!db) return;
     
-    // Fix: Use v8 compat API for setting a document.
-    const cartDocRef = firestoreDb.collection('carts').doc(uid);
+    const cartDocRef = db.collection('carts').doc(uid);
     await cartDocRef.set({ items: cartItems });
 };
