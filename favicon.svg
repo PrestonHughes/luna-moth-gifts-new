@@ -2,7 +2,7 @@
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 24 24"
   fill="none"
-  stroke="currentColor"
+  stroke="#A7A1E5"
   stroke-width="1.5"
   stroke-linecap="round"
   stroke-linejoin="round">
@@ -18,5 +18,5 @@
   <path d="M13 14.5 C 19 15, 18 22, 15 21" />
   <!-- Celestial Elements -->
   <path d="M7 9.5 A 2 2 0 0 0 7.5 11 A 1.5 1.5 0 0 1 7 9.5" />
-  <path d="M17 10 L17.5 9 L18 10 L17.25 10.5 L18 11 L17 10.75 L16 11 L16.75 10.5 Z" stroke-width="1" />
+  <path d="M17 10 L17.5 9 L18 10 L17.25 10.5 L18 11 L17 10.75 L16 11 L16.75 10.5 Z" stroke-width="1" fill="#A7A1E5" />
 </svg>

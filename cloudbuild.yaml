@@ -31,7 +31,18 @@ steps:
       --define:process.env.FIREBASE_APP_ID="'${_FIREBASE_APP_ID}'" \
       --define:process.env.FIREBASE_MEASUREMENT_ID="'${_FIREBASE_MEASUREMENT_ID}'"
 
-# 3. Write an nginx config and a Dockerfile on the fly.
+# 3. Remove dev-only scripts from HTML
+- name: 'bash'
+  id: 'Remove dev scripts from HTML'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    # Use sed to find the block between the start and end comments and delete it.
+    # This removes the Tailwind Play CDN script from the production build.
+    sed '/<!-- Tailwind Play CDN for AI Studio development -->/,/<!-- End of Tailwind Play CDN section -->/d' index.html > index.html.tmp && mv index.html.tmp index.html
+
+# 4. Write an nginx config and a Dockerfile on the fly.
 #    The nginx config is set up to properly serve a Single-Page Application (SPA).
 - name: 'bash'
   entrypoint: 'bash'
@@ -79,7 +90,7 @@ steps:
     CMD ["nginx", "-g", "daemon off;"]
     EOF
 
-# 4. Build the docker image using the Dockerfile we just created.
+# 5. Build the docker image using the Dockerfile we just created.
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
@@ -87,11 +98,11 @@ steps:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest'
   - '.'
 
-# 5. Push the final container image to Artifact Registry.
+# 6. Push the final container image to Artifact Registry.
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest']
 
-# 6. Deploy the container image to Cloud Run.
+# 7. Deploy the container image to Cloud Run.
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'gcloud'
   args:
