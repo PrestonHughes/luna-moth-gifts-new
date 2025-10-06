@@ -62,8 +62,8 @@ const AppContent: React.FC = () => {
             date: '2023-10-26',
             total: 75.00,
             items: [
-                { productId: '2', name: 'Rose Quartz', size: 'Standard', quantity: 1, price: 25.00, imageUrl: 'https://picsum.photos/400/400?random=101' },
-                { productId: '5', name: 'Citrine Geode', size: 'Standard', quantity: 1, price: 50.00, imageUrl: 'https://picsum.photos/400/400?random=102' }
+                { productId: '2', name: 'Rose Quartz', size: 'Standard', quantity: 1, price: 25.00, imageUrl: 'https://source.unsplash.com/400x400/?rose,quartz&sig=101' },
+                { productId: '5', name: 'Citrine Geode', size: 'Standard', quantity: 1, price: 50.00, imageUrl: 'https://source.unsplash.com/400x400/?citrine,geode&sig=102' }
             ]
         },
         {
@@ -71,8 +71,8 @@ const AppContent: React.FC = () => {
             date: '2023-08-15',
             total: 53.00,
             items: [
-                { productId: '6', name: 'Selenite Wand', size: 'Standard', quantity: 1, price: 18.00, imageUrl: 'https://picsum.photos/400/400?random=103' },
-                { productId: '7', name: 'Labradorite Palm Stone', size: 'Medium', quantity: 1, price: 35.00, imageUrl: 'https://picsum.photos/400/400?random=104' }
+                { productId: '6', name: 'Selenite Wand', size: 'Standard', quantity: 1, price: 18.00, imageUrl: 'https://source.unsplash.com/400x400/?selenite,wand&sig=103' },
+                { productId: '7', name: 'Labradorite Palm Stone', size: 'Medium', quantity: 1, price: 35.00, imageUrl: 'https://source.unsplash.com/400x400/?labradorite&sig=104' }
             ]
         }
     ];
@@ -193,7 +193,6 @@ const AppContent: React.FC = () => {
         });
         setSelectedProduct(null); // Close modal after adding
         addToast(`${productToAdd.name} added to cart`); // Show toast notification
-        setTimeout(() => setIsCartPanelOpen(true), 100); // Open cart panel with a slight delay
     };
     
     const handleUpdateCartQuantity = (cartId: string, newQuantity: number) => {
