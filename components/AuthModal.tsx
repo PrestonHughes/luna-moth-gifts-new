@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
 import { signUpWithEmail, signInWithEmail } from '../services/firebaseService';
+import type firebase from 'firebase/compat/app';
 
 interface AuthModalProps {
   onClose: () => void;
+  onLoginSuccess: (user: firebase.User) => void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLoginSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,16 +28,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
     try {
         if (isLogin) {
-            await signInWithEmail(email, password);
-            onClose(); // Close modal on success
+            const user = await signInWithEmail(email, password);
+            onLoginSuccess(user);
         } else {
             if (password !== confirmPassword) {
                 setError("Passwords do not match.");
                 setIsLoading(false);
                 return;
             }
-            await signUpWithEmail(email, password);
-            onClose(); // Close modal on success
+            const user = await signUpWithEmail(email, password);
+            onLoginSuccess(user);
         }
     } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred.');

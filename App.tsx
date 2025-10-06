@@ -137,6 +137,13 @@ const AppContent: React.FC = () => {
         setCurrentPage(page);
         window.scrollTo(0, 0);
     };
+    
+    const handleLoginSuccess = (user: firebase.User) => {
+        // This callback provides an immediate, imperative update to the UI
+        // by setting the user state, which triggers other effects.
+        setFirebaseUser(user);
+        setIsAuthModalOpen(false); // Close the modal on success
+    };
 
     const handleLogout = async () => {
         await signOutUser();
@@ -262,7 +269,7 @@ const AppContent: React.FC = () => {
             </div>
 
             {/* Modals and Panels that appear over the blurred content */}
-            {isAuthModalOpen && <AuthModal onClose={() => setIsAuthModalOpen(false)} />}
+            {isAuthModalOpen && <AuthModal onClose={() => setIsAuthModalOpen(false)} onLoginSuccess={handleLoginSuccess} />}
             {selectedProduct && 
                 <ProductModal 
                     product={selectedProduct} 
