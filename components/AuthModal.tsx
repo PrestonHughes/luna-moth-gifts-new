@@ -28,7 +28,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLoginSuccess }) => {
 
     try {
         if (isLogin) {
+            console.log('[AuthModal] Attempting login...');
             await signInWithEmail(email, password);
+            console.log('[AuthModal] Login successful, calling onLoginSuccess');
             onLoginSuccess();
         } else {
             if (password !== confirmPassword) {
@@ -36,10 +38,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLoginSuccess }) => {
                 setIsLoading(false);
                 return;
             }
+            console.log('[AuthModal] Attempting signup...');
             await signUpWithEmail(email, password);
+            console.log('[AuthModal] Signup successful, calling onLoginSuccess');
             onLoginSuccess();
         }
     } catch (err) {
+        console.error('[AuthModal] Auth error:', err);
         setError(err instanceof Error ? err.message : 'An unknown error occurred.');
     } finally {
         setIsLoading(false);

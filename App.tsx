@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect } from 'react';
 import type { User, Page, Product, CartItem, ProductVariant, Order } from './types';
 import type firebase from 'firebase/compat/app';
@@ -42,6 +43,7 @@ const AppContent: React.FC = () => {
     // State management
     const [firebaseUser, setFirebaseUser] = useState<firebase.User | null>(null);
     const [appUser, setAppUser] = useState<User | null>(null);
+    const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [currentPage, setCurrentPage] = useState<Page>('home');
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -78,7 +80,9 @@ const AppContent: React.FC = () => {
     // Effect 1: Listen for Firebase auth state changes and update the raw firebaseUser state.
     // This is the single source of truth for authentication status.
     useEffect(() => {
+        console.log('[Auth Effect] Setting up auth state listener');
         const unsubscribe = onAuthStateChangedListener((user) => {
+            console.log('[Auth Effect] Auth state changed:', user ? `User logged in: ${user.email}` : 'User logged out');
             setFirebaseUser(user);
         });
         // Cleanup subscription on component unmount
@@ -89,31 +93,45 @@ const AppContent: React.FC = () => {
     // When a user logs in or out, this effect manages fetching/creating their profile
     // and loading their cart data from Firestore.
     useEffect(() => {
+        console.log('[User Effect] firebaseUser changed:', firebaseUser ? `UID: ${firebaseUser.uid}` : 'null');
         const manageUserAndCart = async () => {
-            if (firebaseUser) {
-                let userProfile = await getUserProfile(firebaseUser.uid);
+            try {
+                if (firebaseUser) {
+                    console.log('[User Effect] Fetching user profile for:', firebaseUser.uid);
+                    let userProfile = await getUserProfile(firebaseUser.uid);
 
-                // If profile doesn't exist, create it (first-time sign-up)
-                if (!userProfile) {
-                    await createUserProfile({ uid: firebaseUser.uid, email: firebaseUser.email! });
-                    userProfile = await getUserProfile(firebaseUser.uid); // Re-fetch to get the created profile
+                    // If profile doesn't exist, create it (first-time sign-up)
+                    if (!userProfile) {
+                        console.log('[User Effect] No profile found, creating new profile');
+                        userProfile = await createUserProfile({ uid: firebaseUser.uid, email: firebaseUser.email! });
+                    }
+                    
+                    const finalUser: User = {
+                        ...userProfile,
+                        orders: (userProfile.orders && userProfile.orders.length > 0) ? userProfile.orders : mockOrders,
+                    };
+                    console.log('[User Effect] Setting appUser:', finalUser);
+                    setAppUser(finalUser);
+
+                    // Fetch the user's cart from Firestore
+                    const remoteCart = await getCart(firebaseUser.uid);
+                    setCartItems(remoteCart);
+                    setIsCartLoaded(true);
+
+                } else {
+                    console.log('[User Effect] Clearing user state');
+                    setAppUser(null);
+                    setCartItems([]); // Clear cart on logout
+                    setIsCartLoaded(false); // Reset cart loaded status
                 }
-                
-                const finalUser: User = {
-                    ...userProfile!,
-                    orders: (userProfile!.orders && userProfile!.orders.length > 0) ? userProfile!.orders : mockOrders,
-                };
-                setAppUser(finalUser);
-
-                // Fetch the user's cart from Firestore
-                const remoteCart = await getCart(firebaseUser.uid);
-                setCartItems(remoteCart);
-                setIsCartLoaded(true);
-
-            } else {
+            } catch (error) {
+                console.error("Error managing user data:", error);
+                // Ensure app is usable even if data fetch fails
                 setAppUser(null);
-                setCartItems([]); // Clear cart on logout
-                setIsCartLoaded(false); // Reset cart loaded status
+                setCartItems([]);
+                setIsCartLoaded(false);
+            } finally {
+                setIsLoadingUser(false);
             }
         };
 
@@ -139,6 +157,7 @@ const AppContent: React.FC = () => {
     };
     
     const handleLoginSuccess = () => {
+        console.log('[Login] Login success callback triggered');
         // The onAuthStateChangedListener will automatically update firebaseUser
         // when Firebase authentication completes, which then triggers the user profile fetch.
         setIsAuthModalOpen(false); // Close the modal on success
@@ -250,6 +269,7 @@ const AppContent: React.FC = () => {
             <div className={`transition-all duration-300 ${isMobileMenuOpen ? 'blur-sm scale-[.98] pointer-events-none' : ''}`}>
                 <Header
                     user={appUser}
+                    isLoadingUser={isLoadingUser}
                     onLoginClick={() => setIsAuthModalOpen(true)}
                     onLogoutClick={handleLogout}
                     navigateTo={navigateTo}
