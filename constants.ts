@@ -1,5 +1,3 @@
-
-
 import type { Product } from './types';
 
 export const products: Product[] = [
@@ -8,7 +6,7 @@ export const products: Product[] = [
     name: 'Amethyst Cluster',
     variants: [{ size: 'Standard', price: 45.00 }],
     description: 'A beautiful cluster known for its calming and spiritual properties.',
-    imageUrls: ['images/amethyst-cluster.jpg'],
+    imageUrls: ['https://picsum.photos/seed/1/800/800'],
     category: 'Clusters',
     isFeatured: true,
   },
@@ -17,7 +15,7 @@ export const products: Product[] = [
     name: 'Rose Quartz',
     variants: [{ size: 'Standard', price: 25.00 }],
     description: 'The stone of universal love, encourages compassion and peace.',
-    imageUrls: ['images/rose-quartz.jpg'],
+    imageUrls: ['https://picsum.photos/seed/2/800/800'],
     category: 'Tumbled Stones',
     isFeatured: true,
   },
@@ -26,7 +24,7 @@ export const products: Product[] = [
     name: 'Black Tourmaline',
     variants: [{ size: 'Standard', price: 30.00 }],
     description: 'A powerful grounding stone, providing protection against negativity.',
-    imageUrls: ['images/black-tourmaline.jpg'],
+    imageUrls: ['https://picsum.photos/seed/3/800/800'],
     category: 'Raw Stones',
     isFeatured: true,
   },
@@ -35,7 +33,7 @@ export const products: Product[] = [
     name: 'Clear Quartz Point',
     variants: [{ size: 'Standard', price: 20.00 }],
     description: 'Known as the "master healer," it amplifies energy and thought.',
-    imageUrls: ['images/clear-quartz-point.jpg'],
+    imageUrls: ['https://picsum.photos/seed/4/800/800'],
     category: 'Points & Wands',
     isFeatured: true,
   },
@@ -44,7 +42,7 @@ export const products: Product[] = [
     name: 'Citrine Geode',
     variants: [{ size: 'Standard', price: 55.00 }],
     description: 'Carries the power of the sun, promoting positivity and joy.',
-    imageUrls: ['images/citrine-geode.jpg'],
+    imageUrls: ['https://picsum.photos/seed/5/800/800'],
     category: 'Geodes',
     isFeatured: true,
   },
@@ -53,7 +51,7 @@ export const products: Product[] = [
     name: 'Selenite Wand',
     variants: [{ size: 'Standard', price: 18.00 }],
     description: 'Used for cleansing energy from other crystals and spaces.',
-    imageUrls: ['images/selenite-wand.jpg'],
+    imageUrls: ['https://picsum.photos/seed/6/800/800'],
     category: 'Points & Wands',
     isFeatured: true,
   },
@@ -66,7 +64,7 @@ export const products: Product[] = [
       { size: 'Large', price: 35.00, description: 'Approx. 2.5" - 4" in diameter.' }
     ],
     description: 'A stone of transformation, it enhances strength of will and a sense of inner worth.',
-    imageUrls: ['images/labradorite-palm-stone.jpg'],
+    imageUrls: ['https://picsum.photos/seed/7/800/800'],
     category: 'Palm Stones',
     isFeatured: true,
   },
@@ -75,7 +73,7 @@ export const products: Product[] = [
     name: 'Lapis Lazuli Sphere',
     variants: [{ size: 'Standard', price: 60.00 }],
     description: 'A symbol of wisdom and truth, it encourages self-awareness and self-expression.',
-    imageUrls: ['images/lapis-lazuli-sphere.jpg'],
+    imageUrls: ['https://picsum.photos/seed/8/800/800'],
     category: 'Spheres',
     isFeatured: true,
   },
@@ -84,7 +82,7 @@ export const products: Product[] = [
     name: 'Malachite',
     variants: [{ size: 'Standard', price: 48.00 }],
     description: 'Known as the stone of transformation, it absorbs negative energies and pollutants.',
-    imageUrls: ['images/malachite.jpg'],
+    imageUrls: ['https://picsum.photos/seed/9/800/800'],
     category: 'Tumbled Stones',
   },
   {
@@ -92,7 +90,7 @@ export const products: Product[] = [
     name: 'Obsidian Scrying Mirror',
     variants: [{ size: 'Standard', price: 75.00 }],
     description: 'A strongly protective stone, it forms a shield against negativity.',
-    imageUrls: ['images/obsidian-mirror.jpg'],
+    imageUrls: ['https://picsum.photos/seed/10/800/800'],
     category: 'Decorative',
   },
   {
@@ -100,7 +98,7 @@ export const products: Product[] = [
     name: 'Fluorite Octahedron',
     variants: [{ size: 'Standard', price: 22.00 }],
     description: 'Highly protective and stabilizing, useful for grounding and harmonizing spiritual energy.',
-    imageUrls: ['images/fluorite-octahedron.jpg'],
+    imageUrls: ['https://picsum.photos/seed/11/800/800'],
     category: 'Geometric',
   },
   {
@@ -108,7 +106,7 @@ export const products: Product[] = [
     name: 'Tiger\'s Eye',
     variants: [{ size: 'Standard', price: 28.00 }],
     description: 'A stone of protection, Tiger\'s Eye may also bring good luck to the wearer.',
-    imageUrls: ['images/tigers-eye.jpg'],
+    imageUrls: ['https://picsum.photos/seed/12/800/800'],
     category: 'Tumbled Stones',
   },
   {
@@ -116,7 +114,7 @@ export const products: Product[] = [
     name: 'Green Aventurine',
     variants: [{ size: 'Standard', price: 24.00 }],
     description: 'A stone of opportunity, thought to be the luckiest of all crystals.',
-    imageUrls: ['images/green-aventurine.jpg'],
+    imageUrls: ['https://picsum.photos/seed/13/800/800'],
     category: 'Tumbled Stones',
   },
   {
@@ -124,7 +122,7 @@ export const products: Product[] = [
     name: 'Carnelian',
     variants: [{ size: 'Standard', price: 26.00 }],
     description: 'A stabilizing stone, Carnelian restores vitality and motivation, and stimulates creativity.',
-    imageUrls: ['images/carnelian.jpg'],
+    imageUrls: ['https://picsum.photos/seed/14/800/800'],
     category: 'Tumbled Stones',
   },
   {
@@ -132,7 +130,7 @@ export const products: Product[] = [
     name: 'Smoky Quartz Point',
     variants: [{ size: 'Standard', price: 32.00 }],
     description: 'An excellent grounding stone, Smoky Quartz gently neutralises negative vibrations.',
-    imageUrls: ['images/smoky-quartz-point.jpg'],
+    imageUrls: ['https://picsum.photos/seed/15/800/800'],
     category: 'Points & Wands',
   },
   {
@@ -140,7 +138,7 @@ export const products: Product[] = [
     name: 'Pyrite Cluster',
     variants: [{ size: 'Standard', price: 40.00 }],
     description: 'Also known as "Fool\'s Gold," Pyrite is a powerful protection stone which shields and protects against all forms of negative vibrations.',
-    imageUrls: ['images/pyrite-cluster.jpg'],
+    imageUrls: ['https://picsum.photos/seed/16/800/800'],
     category: 'Clusters',
     isFeatured: true,
   },
@@ -149,7 +147,7 @@ export const products: Product[] = [
     name: 'Amethyst Bracelet',
     variants: [{ size: 'Standard', price: 38.00 }],
     description: 'Wear the calming energy of Amethyst with this beautiful beaded bracelet.',
-    imageUrls: ['images/amethyst-bracelet.jpg'],
+    imageUrls: ['https://picsum.photos/seed/17/800/800'],
     category: 'Jewelry',
   },
   {
@@ -157,7 +155,7 @@ export const products: Product[] = [
     name: 'Howlite Sphere',
     variants: [{ size: 'Standard', price: 50.00 }],
     description: 'A calming stone, Howlite can help reduce levels of stress and anger.',
-    imageUrls: ['images/howlite-sphere.jpg'],
+    imageUrls: ['https://picsum.photos/seed/18/800/800'],
     category: 'Spheres',
   },
   {
@@ -165,7 +163,7 @@ export const products: Product[] = [
     name: 'Sodalite',
     variants: [{ size: 'Standard', price: 29.00 }],
     description: 'Encourages rational thought, objectivity, truth and intuition.',
-    imageUrls: ['images/sodalite.jpg'],
+    imageUrls: ['https://picsum.photos/seed/19/800/800'],
     category: 'Raw Stones',
   },
   {
@@ -173,7 +171,7 @@ export const products: Product[] = [
     name: 'Red Jasper Palm Stone',
     variants: [{ size: 'Medium', price: 33.00 }],
     description: 'Known as the “supreme nurturer”, it sustains and supports through times of stress.',
-    imageUrls: ['images/red-jasper-palm-stone.jpg'],
+    imageUrls: ['https://picsum.photos/seed/20/800/800'],
     category: 'Palm Stones',
   },
   {
@@ -181,7 +179,7 @@ export const products: Product[] = [
     name: 'Moonstone Pendant',
     variants: [{ size: 'Standard', price: 65.00 }],
     description: 'A stone for “new beginnings”, Moonstone is a stone of inner growth and strength.',
-    imageUrls: ['images/moonstone-pendant.jpg'],
+    imageUrls: ['https://picsum.photos/seed/21/800/800'],
     category: 'Jewelry',
     isFeatured: true,
   },
@@ -190,7 +188,7 @@ export const products: Product[] = [
     name: 'Desert Rose Selenite',
     variants: [{ size: 'Standard', price: 20.00 }],
     description: 'Said to contain a unique spirit guardian, each one is different.',
-    imageUrls: ['images/desert-rose-selenite.jpg'],
+    imageUrls: ['https://picsum.photos/seed/22/800/800'],
     category: 'Clusters',
   },
   {
@@ -198,7 +196,7 @@ export const products: Product[] = [
     name: 'Ocean Jasper',
     variants: [{ size: 'Standard', price: 34.00 }],
     description: 'Encourages a feeling of joy and elevated spirits. Helps you to release negative feelings.',
-    imageUrls: ['images/ocean-jasper.jpg'],
+    imageUrls: ['https://picsum.photos/seed/23/800/800'],
     category: 'Tumbled Stones',
   },
   {
@@ -206,7 +204,7 @@ export const products: Product[] = [
     name: 'Kyanite Blade',
     variants: [{ size: 'Standard', price: 28.00 }],
     description: 'Excellent for attunement and meditation. It is tranquilizing and a powerful transmitter of high-frequency energies.',
-    imageUrls: ['images/kyanite-blade.jpg'],
+    imageUrls: ['https://picsum.photos/seed/24/800/800'],
     category: 'Raw Stones',
   },
 ];
