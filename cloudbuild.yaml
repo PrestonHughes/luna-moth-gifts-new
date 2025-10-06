@@ -1,3 +1,4 @@
+
 steps:
 # 1. Install npm dependencies
 - name: 'gcr.io/cloud-builders/npm'
@@ -82,6 +83,8 @@ steps:
     COPY ./dist/ ./dist/
     COPY ./index.html .
     COPY ./favicon.svg .
+    # Copy the public directory which contains images and other static assets.
+    COPY ./public/ ./public/
 
     # Expose the port Cloud Run expects
     EXPOSE 8080
