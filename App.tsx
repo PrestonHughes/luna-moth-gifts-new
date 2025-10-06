@@ -100,15 +100,24 @@ const AppContent: React.FC = () => {
     // It runs once on initial load and whenever the auth state changes.
     useEffect(() => {
         const unsubscribe = onAuthStateChangedListener(async (user) => {
-            if (user) {
-                await loadUserAndCart(user);
-            } else {
+            try {
+                if (user) {
+                    await loadUserAndCart(user);
+                } else {
+                    setAppUser(null);
+                    setCartItems([]); // Clear cart on logout
+                    setIsCartLoaded(false); // Reset cart loaded status
+                }
+            } catch (error) {
+                console.error("Failed to load user data during auth state change:", error);
+                // In case of an error, ensure we're in a logged-out state.
                 setAppUser(null);
-                setCartItems([]); // Clear cart on logout
-                setIsCartLoaded(false); // Reset cart loaded status
+                setCartItems([]);
+                setIsCartLoaded(false);
+            } finally {
+                // This is guaranteed to run, whether the user login succeeds, fails, or they are logged out.
+                setIsLoadingUser(false);
             }
-            // Finished initial user loading
-            setIsLoadingUser(false);
         });
         // Cleanup subscription on component unmount
         return unsubscribe;
