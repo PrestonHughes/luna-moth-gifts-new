@@ -26,11 +26,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
     try {
         if (isLogin) {
-            // Handle Login
             await signInWithEmail(email, password);
             onClose(); // Close modal on success
         } else {
-            // Handle Sign Up
             if (password !== confirmPassword) {
                 setError("Passwords do not match.");
                 setIsLoading(false);

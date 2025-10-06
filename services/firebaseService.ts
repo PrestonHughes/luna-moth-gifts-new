@@ -71,13 +71,16 @@ const mapAuthError = (error: any): string => {
  * Signs up a new user with an email and password.
  * @param email - The user's email.
  * @param password - The user's password.
- * @returns A promise that resolves with the created user's credentials.
+ * @returns A promise that resolves with the created Firebase user object.
  */
-export const signUpWithEmail = async (email: string, password: string) => {
+export const signUpWithEmail = async (email: string, password: string): Promise<firebase.User> => {
     try {
         checkAuthAvailability();
         const userCredential = await auth!.createUserWithEmailAndPassword(email, password);
-        return userCredential;
+        if (!userCredential.user) {
+            throw new Error("Sign up successful, but no user object was returned.");
+        }
+        return userCredential.user;
     } catch (error) {
         throw new Error(mapAuthError(error));
     }
@@ -87,12 +90,16 @@ export const signUpWithEmail = async (email: string, password: string) => {
  * Signs in an existing user with an email and password.
  * @param email - The user's email.
  * @param password - The user's password.
- * @returns A promise that resolves with the signed-in user's credentials.
+ * @returns A promise that resolves with the signed-in Firebase user object.
  */
-export const signInWithEmail = async (email: string, password: string) => {
+export const signInWithEmail = async (email: string, password: string): Promise<firebase.User> => {
      try {
         checkAuthAvailability();
-        return await auth!.signInWithEmailAndPassword(email, password);
+        const userCredential = await auth!.signInWithEmailAndPassword(email, password);
+        if (!userCredential.user) {
+            throw new Error("Login successful, but no user object was returned.");
+        }
+        return userCredential.user;
     } catch (error) {
         throw new Error(mapAuthError(error));
     }

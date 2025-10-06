@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import type { User, Page, Product, CartItem, ProductVariant, Order } from './types';
+import type firebase from 'firebase/compat/app';
 import { products } from './constants';
 import { onAuthStateChangedListener, signOutUser } from './services/firebaseService';
 import { getUserProfile, createUserProfile, getCart, updateCart, updateUserProfile } from './services/firestoreService';
@@ -39,7 +40,8 @@ function useDebounce<T>(value: T, delay: number): T {
 
 const AppContent: React.FC = () => {
     // State management
-    const [user, setUser] = useState<User | null>(null);
+    const [firebaseUser, setFirebaseUser] = useState<firebase.User | null>(null);
+    const [appUser, setAppUser] = useState<User | null>(null);
     const [currentPage, setCurrentPage] = useState<Page>('home');
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -73,9 +75,21 @@ const AppContent: React.FC = () => {
         }
     ];
     
-    // Listen for Firebase auth state changes and handle user/cart data
+    // Effect 1: Listen for Firebase auth state changes and update the raw firebaseUser state.
+    // This is the single source of truth for authentication status.
     useEffect(() => {
-        const unsubscribe = onAuthStateChangedListener(async (firebaseUser) => {
+        const unsubscribe = onAuthStateChangedListener((user) => {
+            setFirebaseUser(user);
+        });
+        // Cleanup subscription on component unmount
+        return unsubscribe;
+    }, []);
+
+    // Effect 2: React to changes in the firebaseUser state.
+    // When a user logs in or out, this effect manages fetching/creating their profile
+    // and loading their cart data from Firestore.
+    useEffect(() => {
+        const manageUserAndCart = async () => {
             if (firebaseUser) {
                 let userProfile = await getUserProfile(firebaseUser.uid);
 
@@ -85,40 +99,37 @@ const AppContent: React.FC = () => {
                     userProfile = await getUserProfile(firebaseUser.uid); // Re-fetch to get the created profile
                 }
                 
-                // Use orders from DB if available, otherwise use mock data as a fallback for the demo
                 const finalUser: User = {
                     ...userProfile!,
                     orders: (userProfile!.orders && userProfile!.orders.length > 0) ? userProfile!.orders : mockOrders,
                 };
-                setUser(finalUser);
+                setAppUser(finalUser);
 
                 // Fetch the user's cart from Firestore
                 const remoteCart = await getCart(firebaseUser.uid);
                 setCartItems(remoteCart);
-                setIsCartLoaded(true); // Mark cart as loaded from backend
+                setIsCartLoaded(true);
 
             } else {
-                setUser(null);
+                setAppUser(null);
                 setCartItems([]); // Clear cart on logout
                 setIsCartLoaded(false); // Reset cart loaded status
             }
-        });
+        };
 
-        // Cleanup subscription on component unmount
-        return unsubscribe;
-    }, []);
+        manageUserAndCart();
+    }, [firebaseUser]);
+
 
     // Debounce cart updates to Firestore
     const debouncedCartItems = useDebounce(cartItems, 500);
 
     // Effect to save cart to Firestore when it changes
     useEffect(() => {
-        // Only save the cart if a user is logged in AND the initial cart has been loaded.
-        // This prevents writing an empty cart to Firestore on initial load before remote data is fetched.
-        if (user && isCartLoaded) {
-            updateCart(user.uid, debouncedCartItems);
+        if (appUser && isCartLoaded) {
+            updateCart(appUser.uid, debouncedCartItems);
         }
-    }, [debouncedCartItems, user, isCartLoaded]);
+    }, [debouncedCartItems, appUser, isCartLoaded]);
 
 
     // Handlers
@@ -133,9 +144,9 @@ const AppContent: React.FC = () => {
     };
     
     const handleUpdateUser = async (updatedInfo: Partial<User>) => {
-        if (user) {
-            await updateUserProfile(user.uid, updatedInfo);
-            setUser({ ...user, ...updatedInfo });
+        if (appUser) {
+            await updateUserProfile(appUser.uid, updatedInfo);
+            setAppUser({ ...appUser, ...updatedInfo });
         }
     };
 
@@ -220,7 +231,7 @@ const AppContent: React.FC = () => {
             case 'inventory':
                 return <InventoryPage products={products} onProductClick={handleProductClick} />;
             case 'account':
-                return <AccountPage user={user} onLogoutClick={handleLogout} onUpdateUser={handleUpdateUser} />;
+                return <AccountPage user={appUser} onLogoutClick={handleLogout} onUpdateUser={handleUpdateUser} />;
             case 'home':
             default:
                 return <HomePage />;
@@ -232,7 +243,7 @@ const AppContent: React.FC = () => {
             {/* The main content of the page that will be blurred */}
             <div className={`transition-all duration-300 ${isMobileMenuOpen ? 'blur-sm scale-[.98] pointer-events-none' : ''}`}>
                 <Header
-                    user={user}
+                    user={appUser}
                     onLoginClick={() => setIsAuthModalOpen(true)}
                     onLogoutClick={handleLogout}
                     navigateTo={navigateTo}
@@ -277,7 +288,7 @@ const AppContent: React.FC = () => {
             <MobileMenu
                 isOpen={isMobileMenuOpen}
                 onClose={() => setIsMobileMenuOpen(false)}
-                user={user}
+                user={appUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
                 onLogoutClick={handleLogout}
                 navigateTo={navigateTo}
