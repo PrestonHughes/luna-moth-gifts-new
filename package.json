@@ -4,7 +4,9 @@
   "description": "A sleek, modern web application for Luna Moth Gifts, a crystal and gemstone business.",
   "private": true,
   "scripts": {
-    "build": "esbuild index.tsx --bundle --outfile=dist/bundle.js --minify --sourcemap"
+    "build:css": "tailwindcss -i ./src/index.css -o ./dist/bundle.css --minify",
+    "build:js": "esbuild index.tsx --bundle --outfile=dist/bundle.js --minify --sourcemap",
+    "build": "npm run build:css && npm run build:js"
   },
   "dependencies": {
     "@google/genai": "^1.21.0",
@@ -13,7 +15,10 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.19",
     "esbuild": "^0.23.0",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.4",
     "typescript": "^5.5.3"
   }
 }

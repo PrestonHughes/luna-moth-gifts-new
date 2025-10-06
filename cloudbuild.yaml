@@ -4,7 +4,12 @@ steps:
   id: 'Install dependencies'
   args: ['install']
 
-# 2. Build the application, injecting variables directly
+# 2a. Build the Tailwind CSS file
+- name: 'gcr.io/cloud-builders/npm'
+  id: 'Build CSS'
+  args: ['exec', 'tailwindcss', '--', '-i', './src/index.css', '-o', './dist/bundle.css', '--minify']
+
+# 2b. Build the application, injecting variables directly
 - name: 'bash'
   id: 'Build application'
   entrypoint: 'bash'
