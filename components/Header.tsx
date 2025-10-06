@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { User, Page } from '../types';
 import { Logo } from './Logo';
@@ -7,6 +8,7 @@ import { CartIcon } from './icons/CartIcon';
 
 interface HeaderProps {
   user: User | null;
+  isLoadingUser: boolean;
   onLoginClick: () => void;
   onLogoutClick: () => void;
   navigateTo: (page: Page) => void;
@@ -17,7 +19,42 @@ interface HeaderProps {
   currentPage: Page;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, onLoginClick, onLogoutClick, navigateTo, onCartClick, cartItemCount, isMenuOpen, onMenuToggle, currentPage }) => {
+const Header: React.FC<HeaderProps> = ({ user, isLoadingUser, onLoginClick, onLogoutClick, navigateTo, onCartClick, cartItemCount, isMenuOpen, onMenuToggle, currentPage }) => {
+
+  const renderAuthSection = () => {
+    if (isLoadingUser) {
+        return (
+            <div className="flex items-center gap-2 bg-transparent border border-slate-300 text-slate-400 font-bold py-2 px-4 rounded-lg animate-pulse-subtle">
+                <UserIcon className="w-5 h-5" />
+                <span>Loading...</span>
+            </div>
+        );
+    }
+
+    if (user) {
+        return (
+            <>
+              <span className="text-slate-600">Welcome, {user.firstName || user.email.split('@')[0]}!</span>
+              <button
+                onClick={onLogoutClick}
+                className="bg-brand-light-purple text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-purple transition-colors duration-300"
+              >
+                Logout
+              </button>
+            </>
+        );
+    }
+
+    return (
+        <button
+          onClick={onLoginClick}
+          className="flex items-center gap-2 bg-transparent border border-brand-purple text-brand-purple font-bold py-2 px-4 rounded-lg hover:bg-brand-purple hover:text-white transition-all duration-300"
+        >
+          <UserIcon className="w-5 h-5" />
+          <span>Login / Sign Up</span>
+        </button>
+    );
+  };
 
   return (
     <header className="sticky top-0 bg-white/90 backdrop-blur-lg z-50 border-b border-slate-200">
@@ -33,25 +70,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLoginClick, onLogoutClick, navi
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          {user ? (
-            <>
-              <span className="text-slate-600">Welcome, {user.firstName || user.email.split('@')[0]}!</span>
-              <button
-                onClick={onLogoutClick}
-                className="bg-brand-light-purple text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-purple transition-colors duration-300"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={onLoginClick}
-              className="flex items-center gap-2 bg-transparent border border-brand-purple text-brand-purple font-bold py-2 px-4 rounded-lg hover:bg-brand-purple hover:text-white transition-all duration-300"
-            >
-              <UserIcon className="w-5 h-5" />
-              <span>Login / Sign Up</span>
-            </button>
-          )}
+          {renderAuthSection()}
            <button onClick={onCartClick} className="relative text-slate-600 hover:text-brand-purple hover:bg-slate-100 rounded-lg transition-all p-2" aria-label={`View cart with ${cartItemCount} items`}>
               <CartIcon className="w-7 h-7" />
               {cartItemCount > 0 && (

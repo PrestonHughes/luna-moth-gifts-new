@@ -40,8 +40,8 @@ function useDebounce<T>(value: T, delay: number): T {
 
 const AppContent: React.FC = () => {
     // State management
-    const [firebaseUser, setFirebaseUser] = useState<firebase.User | null>(null);
     const [appUser, setAppUser] = useState<User | null>(null);
+    const [isLoadingUser, setIsLoadingUser] = useState(true); // New state to track initial user load
     const [currentPage, setCurrentPage] = useState<Page>('home');
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -74,51 +74,45 @@ const AppContent: React.FC = () => {
             ]
         }
     ];
+
+    const loadUserAndCart = async (firebaseUser: firebase.User) => {
+        let userProfile = await getUserProfile(firebaseUser.uid);
+
+        // If profile doesn't exist, create it (first-time sign-up)
+        if (!userProfile) {
+            // createUserProfile now returns the new profile, saving a database call.
+            userProfile = await createUserProfile({ uid: firebaseUser.uid, email: firebaseUser.email! });
+        }
+        
+        const finalUser: User = {
+            ...userProfile,
+            orders: (userProfile.orders && userProfile.orders.length > 0) ? userProfile.orders : mockOrders,
+        };
+        setAppUser(finalUser);
+
+        // Fetch the user's cart from Firestore
+        const remoteCart = await getCart(firebaseUser.uid);
+        setCartItems(remoteCart);
+        setIsCartLoaded(true);
+    };
     
-    // Effect 1: Listen for Firebase auth state changes and update the raw firebaseUser state.
-    // This is the single source of truth for authentication status.
+    // Effect: Listen for Firebase auth state changes. This is the single source of truth for authentication.
+    // It runs once on initial load and whenever the auth state changes.
     useEffect(() => {
-        const unsubscribe = onAuthStateChangedListener((user) => {
-            setFirebaseUser(user);
-        });
-        // Cleanup subscription on component unmount
-        return unsubscribe;
-    }, []);
-
-    // Effect 2: React to changes in the firebaseUser state.
-    // When a user logs in or out, this effect manages fetching/creating their profile
-    // and loading their cart data from Firestore.
-    useEffect(() => {
-        const manageUserAndCart = async () => {
-            if (firebaseUser) {
-                let userProfile = await getUserProfile(firebaseUser.uid);
-
-                // If profile doesn't exist, create it (first-time sign-up)
-                if (!userProfile) {
-                    await createUserProfile({ uid: firebaseUser.uid, email: firebaseUser.email! });
-                    userProfile = await getUserProfile(firebaseUser.uid); // Re-fetch to get the created profile
-                }
-                
-                const finalUser: User = {
-                    ...userProfile!,
-                    orders: (userProfile!.orders && userProfile!.orders.length > 0) ? userProfile!.orders : mockOrders,
-                };
-                setAppUser(finalUser);
-
-                // Fetch the user's cart from Firestore
-                const remoteCart = await getCart(firebaseUser.uid);
-                setCartItems(remoteCart);
-                setIsCartLoaded(true);
-
+        const unsubscribe = onAuthStateChangedListener(async (user) => {
+            if (user) {
+                await loadUserAndCart(user);
             } else {
                 setAppUser(null);
                 setCartItems([]); // Clear cart on logout
                 setIsCartLoaded(false); // Reset cart loaded status
             }
-        };
-
-        manageUserAndCart();
-    }, [firebaseUser]);
+            // Finished initial user loading
+            setIsLoadingUser(false);
+        });
+        // Cleanup subscription on component unmount
+        return unsubscribe;
+    }, []);
 
 
     // Debounce cart updates to Firestore
@@ -136,13 +130,6 @@ const AppContent: React.FC = () => {
     const navigateTo = (page: Page) => {
         setCurrentPage(page);
         window.scrollTo(0, 0);
-    };
-    
-    const handleLoginSuccess = (user: firebase.User) => {
-        // This callback provides an immediate, imperative update to the UI
-        // by setting the user state, which triggers other effects.
-        setFirebaseUser(user);
-        setIsAuthModalOpen(false); // Close the modal on success
     };
 
     const handleLogout = async () => {
@@ -251,6 +238,7 @@ const AppContent: React.FC = () => {
             <div className={`transition-all duration-300 ${isMobileMenuOpen ? 'blur-sm scale-[.98] pointer-events-none' : ''}`}>
                 <Header
                     user={appUser}
+                    isLoadingUser={isLoadingUser}
                     onLoginClick={() => setIsAuthModalOpen(true)}
                     onLogoutClick={handleLogout}
                     navigateTo={navigateTo}
@@ -269,7 +257,7 @@ const AppContent: React.FC = () => {
             </div>
 
             {/* Modals and Panels that appear over the blurred content */}
-            {isAuthModalOpen && <AuthModal onClose={() => setIsAuthModalOpen(false)} onLoginSuccess={handleLoginSuccess} />}
+            {isAuthModalOpen && <AuthModal onClose={() => setIsAuthModalOpen(false)} />}
             {selectedProduct && 
                 <ProductModal 
                     product={selectedProduct} 

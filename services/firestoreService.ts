@@ -22,12 +22,23 @@ export const getUserProfile = async (uid: string): Promise<User | null> => {
 };
 
 /**
- * Creates a new user profile document in Firestore.
+ * Creates a new user profile document in Firestore and returns it.
  * This is typically called right after a user signs up.
  * @param user The user object containing uid and email.
+ * @returns The newly created user profile object.
  */
-export const createUserProfile = async (user: { uid: string; email: string; }) => {
-    if (!db) return;
+export const createUserProfile = async (user: { uid: string; email: string; }): Promise<User> => {
+    if (!db) {
+        // In a real app, you might want to throw an error or handle this more gracefully.
+        // For this project, returning a default object allows the UI to proceed without crashing in IDE mode.
+        return { 
+            uid: user.uid, 
+            email: user.email, 
+            firstName: '', 
+            lastName: '', 
+            orders: [] 
+        };
+    }
 
     const userDocRef = db.collection('users').doc(user.uid);
     // Create a new user profile with default/initial values
@@ -39,6 +50,7 @@ export const createUserProfile = async (user: { uid: string; email: string; }) =
         orders: [], // Initialize with empty orders
     };
     await userDocRef.set(newUserProfile);
+    return newUserProfile;
 };
 
 /**
