@@ -120,7 +120,6 @@ steps:
     COPY ./dist/ /usr/share/nginx/html/dist/
     COPY ./index.html /usr/share/nginx/html/
     COPY ./favicon.svg /usr/share/nginx/html/
-    COPY ./images/ /usr/share/nginx/html/images/
 
     # Expose the port Cloud Run expects
     EXPOSE 8080

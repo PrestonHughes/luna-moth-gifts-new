@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import type { User, Page, Product, CartItem, ProductVariant, Order } from './types';
 import type firebase from 'firebase/compat/app';
@@ -103,8 +104,8 @@ const AppContent: React.FC = () => {
             date: '2023-10-26',
             total: 75.00,
             items: [
-                { productId: '2', name: 'Rose Quartz', size: 'Standard', quantity: 1, price: 25.00, imageUrl: 'images/rose-quartz.jpg' },
-                { productId: '5', name: 'Citrine Geode', size: 'Standard', quantity: 1, price: 50.00, imageUrl: 'images/citrine-geode.jpg' }
+                { productId: '2', name: 'Rose Quartz', size: 'Standard', quantity: 1, price: 25.00, imageUrl: 'https://picsum.photos/seed/2/800/800' },
+                { productId: '5', name: 'Citrine Geode', size: 'Standard', quantity: 1, price: 50.00, imageUrl: 'https://picsum.photos/seed/5/800/800' }
             ]
         },
         {
@@ -112,8 +113,8 @@ const AppContent: React.FC = () => {
             date: '2023-08-15',
             total: 53.00,
             items: [
-                { productId: '6', name: 'Selenite Wand', size: 'Standard', quantity: 1, price: 18.00, imageUrl: 'images/selenite-wand.jpg' },
-                { productId: '7', name: 'Labradorite Palm Stone', size: 'Medium', quantity: 1, price: 35.00, imageUrl: 'images/labradorite-palm-stone.jpg' }
+                { productId: '6', name: 'Selenite Wand', size: 'Standard', quantity: 1, price: 18.00, imageUrl: 'https://picsum.photos/seed/6/800/800' },
+                { productId: '7', name: 'Labradorite Palm Stone', size: 'Medium', quantity: 1, price: 35.00, imageUrl: 'https://picsum.photos/seed/7/800/800' }
             ]
         }
     ];
