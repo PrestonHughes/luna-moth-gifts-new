@@ -75,10 +75,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
         >
             <div 
                 ref={modalRef}
-                className="bg-white rounded-xl shadow-2xl w-full max-w-4xl mx-4 h-auto max-h-[90vh] overflow-y-auto animate-slide-up" 
+                className="bg-white rounded-xl shadow-2xl w-full max-w-4xl mx-4 h-auto max-h-[90vh] overflow-y-auto animate-slide-up relative" 
                 onClick={(e) => e.stopPropagation()}
                 tabIndex={-1}
             >
+                <button onClick={onClose} className="absolute top-2 right-2 text-slate-400 hover:text-slate-700 text-3xl leading-none z-10" aria-label="Close dialog">&times;</button>
                 <div className="p-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
@@ -107,10 +108,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                             </div>
                         </div>
                         <div className="flex flex-col">
-                            <div className="flex justify-between items-start">
-                                 <h2 id="product-title" className="font-serif text-4xl font-bold text-brand-deep-purple mb-4">{product.name}</h2>
-                                 <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-3xl leading-none -mt-2" aria-label="Close dialog">&times;</button>
-                            </div>
+                             <h2 id="product-title" className="font-serif text-4xl font-bold text-brand-deep-purple mb-4 pr-8">{product.name}</h2>
                             <p className="text-slate-600 text-lg mb-6">{product.description}</p>
                             
                             {product.variants.length > 1 && (
