@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { suggestCrystal } from '../services/geminiService';
 import type { GeminiSuggestion, Product } from '../types';
 import { SearchIcon } from './icons/SearchIcon';
+import { CrystalBallIcon } from './icons/CrystalBallIcon';
 
 interface GeminiCrystalFinderProps {
     products: Product[];
@@ -80,9 +81,9 @@ const GeminiCrystalFinder: React.FC<GeminiCrystalFinderProps> = ({ products, onP
             {hasSearched && (
                 <div className="mt-6 flex items-center justify-center min-h-[120px] animate-fade-in">
                     {isLoading && (
-                         <div className="flex flex-col items-center gap-2 text-slate-500 animate-pulse-subtle">
-                            <div className="w-8 h-8 border-2 border-brand-light-purple border-t-transparent rounded-full animate-spin"></div>
-                            <p>Consulting the oracle...</p>
+                         <div className="flex flex-col items-center gap-2 text-slate-500">
+                            <CrystalBallIcon className="w-16 h-16 text-brand-light-purple" />
+                            <p className="animate-pulse-subtle">Consulting the oracle...</p>
                         </div>
                     )}
                     {error && <p className="text-red-500 text-center">{error}</p>}
