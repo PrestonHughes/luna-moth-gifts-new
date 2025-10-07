@@ -49,8 +49,8 @@ steps:
 
       # Use sed to replace the placeholder paths in index.html.
       # Using '%' as a delimiter to prevent parsing issues.
-      sed -i "s%/dist/bundle.js%/$${JS_FILE_PATH}%g" index.html
-      sed -i "s%/dist/bundle.css%/$${CSS_FILE_PATH}%g" index.html
+      sed -i "s%dist/bundle.js%$${JS_FILE_PATH}%g" index.html
+      sed -i "s%dist/bundle.css%$${CSS_FILE_PATH}%g" index.html
 
 # 4. Remove dev-only scripts from HTML
 - name: 'bash'
