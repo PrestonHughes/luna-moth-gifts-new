@@ -5,24 +5,19 @@ steps:
   id: 'Install dependencies'
   args: ['install']
 
-# 2a. Build the Tailwind CSS file
-- name: 'gcr.io/cloud-builders/npm'
-  id: 'Build CSS'
-  args: ['exec', 'tailwindcss', '--', '-i', './src/index.css', '-o', './dist/bundle.css', '--minify']
-
-# 2b. Build the application, injecting variables directly
+# 2. Build the application, injecting variables directly.
+#    esbuild will now handle both JS and CSS, bundling them into hashed files for cache busting.
 - name: 'bash'
   id: 'Build application'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    # Run esbuild directly from node_modules, passing each environment variable
-    # from the Cloud Build substitution variables as a '--define' flag.
-    # This replaces 'process.env.VAR_NAME' in the source code with the actual
-    # string value at build time. The single and double quotes are important
-    # to ensure the values are correctly interpreted as strings by esbuild.
-    ./node_modules/.bin/esbuild index.tsx --bundle --outfile=dist/bundle.js --minify --sourcemap \
+    # Run esbuild to bundle both index.tsx and its imported CSS.
+    # --outdir=dist: Puts all output files in the 'dist' directory.
+    # --entry-names=[name]-[hash]: This is the core of cache busting. It adds a unique hash to each output file.
+    # --metafile=...: Creates a JSON file that maps original filenames to their new hashed versions.
+    ./node_modules/.bin/esbuild index.tsx --bundle --outdir=dist --entry-names=[name]-[hash] --minify --sourcemap --metafile=dist/metafile.json \
       --define:process.env.API_KEY="'${_API_KEY}'" \
       --define:process.env.FIREBASE_API_KEY="'${_FIREBASE_API_KEY}'" \
       --define:process.env.FIREBASE_AUTH_DOMAIN="'${_FIREBASE_AUTH_DOMAIN}'" \
@@ -32,7 +27,32 @@ steps:
       --define:process.env.FIREBASE_APP_ID="'${_FIREBASE_APP_ID}'" \
       --define:process.env.FIREBASE_MEASUREMENT_ID="'${_FIREBASE_MEASUREMENT_ID}'"
 
-# 3. Remove dev-only scripts from HTML
+# 3. Update index.html to use the new hashed filenames from the metafile
+- name: 'bash'
+  id: 'Update HTML with hashed filenames'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      # Extract the final JS and CSS filenames from the esbuild metafile.
+      JS_FILE_PATH=$(cat dist/metafile.json | grep -o '"dist/index-.*\.js"' | tr -d '"')
+      CSS_FILE_PATH=$(cat dist/metafile.json | grep -o '"dist/index-.*\.css"' | tr -d '"')
+
+      # Check if files were found before proceeding.
+      if [ -z "$JS_FILE_PATH" ] || [ -z "$CSS_FILE_PATH" ]; then
+        echo "Error: Could not find hashed JS or CSS file in metafile.json"
+        cat dist/metafile.json # Print metafile for debugging
+        exit 1
+      fi
+
+      echo "Updating index.html with JS: $JS_FILE_PATH and CSS: $CSS_FILE_PATH"
+
+      # Use sed to replace the placeholder paths in index.html.
+      # Note: Using a different delimiter like '|' for sed to avoid issues with '/' in file paths.
+      sed -i "s|/dist/bundle.js|/$JS_FILE_PATH|g" index.html
+      sed -i "s|/dist/bundle.css|/$CSS_FILE_PATH|g" index.html
+
+# 4. Remove dev-only scripts from HTML
 - name: 'bash'
   id: 'Remove dev scripts from HTML'
   entrypoint: 'bash'
@@ -43,7 +63,7 @@ steps:
     # This removes the Tailwind Play CDN script from the production build.
     sed '/<!-- Tailwind Play CDN for AI Studio development -->/,/<!-- End of Tailwind Play CDN section -->/d' index.html > index.html.tmp && mv index.html.tmp index.html
 
-# 4. Write an nginx config and a Dockerfile on the fly.
+# 5. Write an nginx config and a Dockerfile on the fly.
 #    The nginx config is set up to properly serve a Single-Page Application (SPA).
 - name: 'bash'
   entrypoint: 'bash'
@@ -90,7 +110,7 @@ steps:
     CMD ["nginx", "-g", "daemon off;"]
     EOF
 
-# 5. Build the docker image using the Dockerfile we just created.
+# 6. Build the docker image using the Dockerfile we just created.
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
@@ -98,11 +118,11 @@ steps:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest'
   - '.'
 
-# 6. Push the final container image to Artifact Registry.
+# 7. Push the final container image to Artifact Registry.
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/luna-moth-gifts/app:latest']
 
-# 7. Deploy the container image to Cloud Run.
+# 8. Deploy the container image to Cloud Run.
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'gcloud'
   args:
