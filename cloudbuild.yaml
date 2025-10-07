@@ -28,15 +28,16 @@ steps:
       --define:process.env.FIREBASE_MEASUREMENT_ID="'${_FIREBASE_MEASUREMENT_ID}'"
 
 # 3. Update index.html to use the new hashed filenames from the metafile
-- name: 'bash'
+- name: 'gcr.io/cloud-builders/npm' # Using npm builder as it's guaranteed to have Node.js
   id: 'Update HTML with hashed filenames'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
       # Extract the final JS and CSS filenames from the esbuild metafile.
-      JS_FILE_PATH=$(cat dist/metafile.json | grep -o '"dist/index-.*\.js"' | tr -d '"')
-      CSS_FILE_PATH=$(cat dist/metafile.json | grep -o '"dist/index-.*\.css"' | tr -d '"')
+      # Export them so the Node script can access them via process.env.
+      export JS_FILE_PATH=$(cat dist/metafile.json | grep -o '"dist/index-.*\.js"' | tr -d '"')
+      export CSS_FILE_PATH=$(cat dist/metafile.json | grep -o '"dist/index-.*\.css"' | tr -d '"')
 
       # Check if files were found before proceeding.
       if [ -z "$$JS_FILE_PATH" ] || [ -z "$$CSS_FILE_PATH" ]; then
@@ -47,10 +48,28 @@ steps:
 
       echo "Updating index.html with JS: $$JS_FILE_PATH and CSS: $$CSS_FILE_PATH"
 
-      # Use sed to replace the placeholder paths in index.html.
-      # Using '%' as a delimiter to prevent parsing issues.
-      sed -i "s%dist/bundle.js%$${JS_FILE_PATH}%g" index.html
-      sed -i "s%dist/bundle.css%$${CSS_FILE_PATH}%g" index.html
+      # Use a robust Node.js script to perform the replacement instead of sed.
+      cat <<EOF > replace.js
+      const fs = require('fs');
+      const htmlPath = 'index.html';
+
+      try {
+        let content = fs.readFileSync(htmlPath, 'utf8');
+
+        // Note: These placeholder strings MUST match what's in index.html
+        content = content.replace('dist/bundle.js', process.env.JS_FILE_PATH);
+        content = content.replace('dist/bundle.css', process.env.CSS_FILE_PATH);
+        
+        fs.writeFileSync(htmlPath, content, 'utf8');
+        console.log('Successfully updated index.html with new asset paths.');
+      } catch (err) {
+        console.error('Error updating index.html:', err);
+        process.exit(1);
+      }
+      EOF
+
+      # Execute the Node.js script.
+      node replace.js
 
 # 4. Remove dev-only scripts from HTML
 - name: 'bash'
