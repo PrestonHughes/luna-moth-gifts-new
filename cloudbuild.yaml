@@ -39,18 +39,18 @@ steps:
       CSS_FILE_PATH=$(cat dist/metafile.json | grep -o '"dist/index-.*\.css"' | tr -d '"')
 
       # Check if files were found before proceeding.
-      if [ -z "$JS_FILE_PATH" ] || [ -z "$CSS_FILE_PATH" ]; then
+      if [ -z "$$JS_FILE_PATH" ] || [ -z "$$CSS_FILE_PATH" ]; then
         echo "Error: Could not find hashed JS or CSS file in metafile.json"
         cat dist/metafile.json # Print metafile for debugging
         exit 1
       fi
 
-      echo "Updating index.html with JS: $JS_FILE_PATH and CSS: $CSS_FILE_PATH"
+      echo "Updating index.html with JS: $$JS_FILE_PATH and CSS: $$CSS_FILE_PATH"
 
       # Use sed to replace the placeholder paths in index.html.
       # Note: Using a different delimiter like '|' for sed to avoid issues with '/' in file paths.
-      sed -i "s|/dist/bundle.js|/$JS_FILE_PATH|g" index.html
-      sed -i "s|/dist/bundle.css|/$CSS_FILE_PATH|g" index.html
+      sed -i "s|/dist/bundle.js|/$$JS_FILE_PATH|g" index.html
+      sed -i "s|/dist/bundle.css|/$$CSS_FILE_PATH|g" index.html
 
 # 4. Remove dev-only scripts from HTML
 - name: 'bash'
