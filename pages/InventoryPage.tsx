@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import ProductGrid from '../components/ProductGrid';
 import type { Product } from '../types';
@@ -7,6 +6,7 @@ import { SearchIcon } from '../components/icons/SearchIcon';
 interface InventoryPageProps {
   products: Product[];
   onProductClick: (product: Product) => void;
+  initialCategory?: string | null;
 }
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
@@ -19,13 +19,19 @@ const getMinPrice = (product: Product) => {
     return Math.min(...product.variants.map(v => v.price));
 };
 
-const InventoryPage: React.FC<InventoryPageProps> = ({ products, onProductClick }) => {
+const InventoryPage: React.FC<InventoryPageProps> = ({ products, onProductClick, initialCategory }) => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [sortOption, setSortOption] = useState<SortOption>('default');
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD_COUNT);
 
   const categories = useMemo(() => ['All', ...Array.from(new Set(products.map(p => p.category)))], [products]);
+
+  useEffect(() => {
+    if (initialCategory && categories.includes(initialCategory)) {
+        setActiveCategory(initialCategory);
+    }
+  }, [initialCategory, categories]);
 
   const displayedProducts = useMemo(() => {
     let filtered = products;

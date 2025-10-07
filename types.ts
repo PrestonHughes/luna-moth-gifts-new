@@ -33,6 +33,7 @@ export interface GeminiSuggestion {
     crystalName: string;
     description: string;
     productId?: string;
+    category?: string;
 }
 
 export interface OrderItem {

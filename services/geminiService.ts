@@ -53,6 +53,30 @@ const responseSchema = {
     required: ["crystalName", "description"]
 };
 
+const imageResponseSchema = {
+    type: Type.OBJECT,
+    properties: {
+        crystalName: {
+            type: Type.STRING,
+            description: "The name of the identified crystal or stone."
+        },
+        description: {
+            type: Type.STRING,
+            description: "A short, one-to-two sentence description of its relevant metaphysical properties."
+        },
+        productId: {
+            type: Type.STRING,
+            description: "If the identified crystal is from our product list, this is its ID. Otherwise, this field should be omitted or null."
+        },
+        category: {
+            type: Type.STRING,
+            description: "The most relevant product category from the provided list for the identified stone (e.g., 'Raw Stones', 'Jewelry', 'Clusters'). This should be provided even if no specific product matches."
+        }
+    },
+    required: ["crystalName", "description"]
+};
+
+
 export const suggestCrystal = async (userInput: string, products: Product[]): Promise<GeminiSuggestion> => {
 
     const productInfoForPrompt = products.map(p => `id: ${p.id}, name: ${p.name}`).join('; ');
@@ -114,14 +138,17 @@ Provide the name of the crystal, a brief one-to-two sentence description of its 
 export const identifyCrystalFromImage = async (base64ImageData: string, products: Product[]): Promise<GeminiSuggestion> => {
     
     const productInfoForPrompt = products.map(p => `id: ${p.id}, name: ${p.name}`).join('; ');
+    const categoriesForPrompt = Array.from(new Set(products.map(p => p.category))).join(', ');
 
-    const systemInstruction = `You are a knowledgeable gemologist. Your goal is to identify the primary crystal or stone in the provided image.
+    const systemInstruction = `You are an expert gemologist. Your primary and most important goal is to accurately identify the main crystal or stone in the provided image.
 
-We have the following crystals for sale, provided with their IDs: [${productInfoForPrompt}].
+First, identify the stone with the highest possible accuracy, based only on its visual characteristics.
 
-After identifying the crystal, please find the best match from our product list.
+Second, after you have made your identification, look at the following list of crystals we have for sale: [${productInfoForPrompt}]. If your identification matches a product in our list, provide its corresponding ID in the 'productId' field. If it does not match anything in our list, do not provide a 'productId'.
 
-Provide the identified crystal's name, a brief one-to-two sentence description of its key properties, and if you found a match from our list, you MUST provide its corresponding ID in the 'productId' field.`;
+Third, determine which of our store's product categories is the most appropriate for the identified stone. Here are our available categories: [${categoriesForPrompt}]. You MUST provide the best matching category name in the 'category' field.
+
+Finally, provide the identified crystal's name and a brief one-to-two sentence description of its key properties.`;
 
     const imagePart = {
         inlineData: {
@@ -131,7 +158,7 @@ Provide the identified crystal's name, a brief one-to-two sentence description o
     };
 
     const textPart = {
-        text: "Please identify the crystal in this image and recommend a matching product from the list.",
+        text: "Please identify the crystal in this image and then check if it matches a product from the provided list.",
     };
 
     try {
@@ -142,7 +169,7 @@ Provide the identified crystal's name, a brief one-to-two sentence description o
             config: {
                 systemInstruction,
                 responseMimeType: "application/json",
-                responseSchema,
+                responseSchema: imageResponseSchema,
                 temperature: 0.2, // Lower temperature for more deterministic identification
             },
         });

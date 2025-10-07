@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useMemo, useEffect } from 'react';
 import type { User, Page, Product, CartItem, ProductVariant, Order } from './types';
 import type firebase from 'firebase/compat/app';
@@ -89,6 +85,7 @@ const AppContent: React.FC = () => {
     const [appUser, setAppUser] = useState<User | null>(null);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [currentPage, setCurrentPage] = useState<Page>('home');
+    const [initialInventoryFilter, setInitialInventoryFilter] = useState<string | null>(null);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -195,7 +192,14 @@ const AppContent: React.FC = () => {
 
 
     // Handlers
-    const navigateTo = (page: Page) => {
+    const navigateTo = (page: Page, context?: { category?: string }) => {
+        if (page === 'inventory' && context?.category) {
+            setInitialInventoryFilter(context.category);
+        } else {
+            // Clear the filter when navigating anywhere else
+            // or when navigating to inventory without a category context.
+            setInitialInventoryFilter(null);
+        }
         setCurrentPage(page);
         window.scrollTo(0, 0);
     };
@@ -262,7 +266,11 @@ const AppContent: React.FC = () => {
     const renderPage = () => {
         switch (currentPage) {
             case 'inventory':
-                return <InventoryPage products={products} onProductClick={handleProductClick} />;
+                return <InventoryPage 
+                            products={products} 
+                            onProductClick={handleProductClick}
+                            initialCategory={initialInventoryFilter} 
+                        />;
             case 'account':
                 return <AccountPage user={appUser} onLogoutClick={handleLogout} onUpdateUser={handleUpdateUser} />;
             case 'stone-identifier':
@@ -271,6 +279,7 @@ const AppContent: React.FC = () => {
                     products={products}
                     onProductClick={handleProductClick}
                     onLoginClick={() => setIsAuthModalOpen(true)}
+                    navigateTo={navigateTo}
                 />;
             case 'home':
             default:

@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { User, Product, GeminiSuggestion } from '../types';
+import { User, Product, GeminiSuggestion, Page } from '../types';
 import { getVisualSearchesToday, logVisualSearch } from '../services/firestoreService';
 import { identifyCrystalFromImage } from '../services/geminiService';
 import { UploadIcon } from '../components/icons/UploadIcon';
@@ -12,6 +11,7 @@ interface StoneIdentifierPageProps {
   products: Product[];
   onProductClick: (product: Product) => void;
   onLoginClick: () => void;
+  navigateTo: (page: Page, context?: { category: string }) => void;
 }
 
 const fileToBase64 = (file: File): Promise<string> => {
@@ -23,7 +23,7 @@ const fileToBase64 = (file: File): Promise<string> => {
     });
 };
 
-const StoneIdentifierPage: React.FC<StoneIdentifierPageProps> = ({ user, products, onProductClick, onLoginClick }) => {
+const StoneIdentifierPage: React.FC<StoneIdentifierPageProps> = ({ user, products, onProductClick, onLoginClick, navigateTo }) => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
     const [searchesRemaining, setSearchesRemaining] = useState<number | null>(null);
@@ -70,7 +70,7 @@ const StoneIdentifierPage: React.FC<StoneIdentifierPageProps> = ({ user, product
             const result = await identifyCrystalFromImage(base64String, products);
             setSuggestion(result);
 
-            // Log the search if the user is not an admin
+            // Log the search if the user is not an admin, regardless of the result.
             if (user.role !== 'admin') {
                 await logVisualSearch(user.uid);
                 setSearchesRemaining(prev => (prev !== null ? Math.max(0, prev - 1) : 0));
@@ -88,6 +88,10 @@ const StoneIdentifierPage: React.FC<StoneIdentifierPageProps> = ({ user, product
         if (product) {
             onProductClick(product);
         }
+    };
+
+    const handleSeeSimilar = (category: string) => {
+        navigateTo('inventory', { category });
     };
 
     const renderContent = () => {
@@ -161,14 +165,21 @@ const StoneIdentifierPage: React.FC<StoneIdentifierPageProps> = ({ user, product
                         <div className="bg-brand-lavender/20 p-6 rounded-lg w-full text-center border border-brand-lavender animate-fade-in">
                             <h3 className="font-serif text-3xl font-bold text-brand-purple mb-2">{suggestion.crystalName}</h3>
                             <p className="text-slate-700 text-lg">{suggestion.description}</p>
-                            {suggestion.productId && (
+                            {suggestion.productId ? (
                                 <button
                                     onClick={() => handleViewProduct(suggestion.productId!)}
                                     className="mt-4 bg-brand-purple text-white font-bold py-2 px-6 rounded-lg hover:bg-brand-deep-purple transition-colors duration-300"
                                 >
                                     View Product in Store
                                 </button>
-                            )}
+                            ) : suggestion.category ? (
+                                <button
+                                    onClick={() => handleSeeSimilar(suggestion.category!)}
+                                    className="mt-4 bg-brand-purple text-white font-bold py-2 px-6 rounded-lg hover:bg-brand-deep-purple transition-colors duration-300"
+                                >
+                                    See Similar Products
+                                </button>
+                            ) : null}
                         </div>
                     )}
                 </div>
