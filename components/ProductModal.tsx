@@ -139,11 +139,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                             
                             <div className="flex-grow"></div>
 
-                            <div className="flex justify-between items-center mt-4">
-                                <span className="text-3xl font-bold text-brand-purple">${selectedVariant.price.toFixed(2)}</span>
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-4">
+                                <span className="text-2xl sm:text-3xl font-bold text-brand-purple">${selectedVariant.price.toFixed(2)}</span>
                                 <button 
                                     onClick={() => onAddToCart(product, selectedVariant)}
-                                    className="bg-brand-light-purple text-white font-bold py-3 px-8 rounded-lg hover:bg-opacity-80 transition-colors duration-300"
+                                    className="bg-brand-light-purple text-white font-bold py-3 px-8 rounded-lg hover:bg-opacity-80 transition-colors duration-300 w-full sm:w-auto"
                                 >
                                     Add to Cart
                                 </button>
