@@ -1,6 +1,7 @@
 
 import { db } from '../firebase';
 import type { User, CartItem } from '../types';
+import firebase from 'firebase/compat/app';
 
 /**
  * Fetches a user's profile from Firestore.
@@ -93,4 +94,43 @@ export const updateCart = async (uid: string, cartItems: CartItem[]) => {
     
     const cartDocRef = db.collection('carts').doc(uid);
     await cartDocRef.set({ items: cartItems });
+};
+
+/**
+ * Gets the number of visual searches a user has performed in the last 24 hours.
+ * @param uid The user's unique ID.
+ * @returns The number of searches.
+ */
+export const getVisualSearchesToday = async (uid: string): Promise<number> => {
+    if (!db) return 0;
+
+    const twentyFourHoursAgo = new Date();
+    twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+
+    const searchesRef = db.collection('visual_searches');
+    // Note: This query requires a composite index in Firestore on 'uid' and 'timestamp'.
+    // Firestore will provide a link in the console error to create it automatically if it doesn't exist.
+    const query = searchesRef.where('uid', '==', uid).where('timestamp', '>=', twentyFourHoursAgo);
+    
+    try {
+        const snapshot = await query.get();
+        return snapshot.size;
+    } catch (error) {
+        console.error("Error fetching visual searches count. This may require creating a Firestore index:", error);
+        return 0; // Fail gracefully
+    }
+};
+
+/**
+ * Logs a visual search event for a user in Firestore.
+ * @param uid The user's unique ID.
+ */
+export const logVisualSearch = async (uid: string): Promise<void> => {
+    if (!db) return;
+
+    const searchesRef = db.collection('visual_searches');
+    await searchesRef.add({
+        uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
 };

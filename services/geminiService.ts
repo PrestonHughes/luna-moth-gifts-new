@@ -34,6 +34,25 @@ const getAiClient = (): GoogleGenAI => {
     return ai;
 };
 
+const responseSchema = {
+    type: Type.OBJECT,
+    properties: {
+        crystalName: {
+            type: Type.STRING,
+            description: "The name of the recommended crystal or stone."
+        },
+        description: {
+            type: Type.STRING,
+            description: "A short, one-to-two sentence description of its relevant metaphysical properties."
+        },
+        productId: {
+            type: Type.STRING,
+            description: "If the recommended crystal is from our product list, this is its ID. Otherwise, this field should be omitted or null."
+        },
+    },
+    required: ["crystalName", "description"]
+};
+
 export const suggestCrystal = async (userInput: string, products: Product[]): Promise<GeminiSuggestion> => {
 
     const productInfoForPrompt = products.map(p => `id: ${p.id}, name: ${p.name}`).join('; ');
@@ -45,25 +64,6 @@ We have the following crystals for sale, provided with their IDs: [${productInfo
 Please prioritize recommending a crystal from this list if it's a good match for the user's query.
 
 Provide the name of the crystal, a brief one-to-two sentence description of its key properties relevant to the user's query, and if you recommended a crystal from our list, you MUST provide its corresponding ID in the 'productId' field.`;
-
-    const responseSchema = {
-        type: Type.OBJECT,
-        properties: {
-            crystalName: {
-                type: Type.STRING,
-                description: "The name of the recommended crystal or stone."
-            },
-            description: {
-                type: Type.STRING,
-                description: "A short, one-to-two sentence description of its relevant metaphysical properties."
-            },
-            productId: {
-                type: Type.STRING,
-                description: "If the recommended crystal is from our product list, this is its ID. Otherwise, this field should be omitted or null."
-            },
-        },
-        required: ["crystalName", "description"]
-    };
 
     try {
         const client = getAiClient();
@@ -107,5 +107,68 @@ Provide the name of the crystal, a brief one-to-two sentence description of its 
 
         // Fallback for non-Error objects
         throw new Error("Failed to get a suggestion. The stars may be misaligned due to an unknown issue.");
+    }
+};
+
+
+export const identifyCrystalFromImage = async (base64ImageData: string, products: Product[]): Promise<GeminiSuggestion> => {
+    
+    const productInfoForPrompt = products.map(p => `id: ${p.id}, name: ${p.name}`).join('; ');
+
+    const systemInstruction = `You are a knowledgeable gemologist. Your goal is to identify the primary crystal or stone in the provided image.
+
+We have the following crystals for sale, provided with their IDs: [${productInfoForPrompt}].
+
+After identifying the crystal, please find the best match from our product list.
+
+Provide the identified crystal's name, a brief one-to-two sentence description of its key properties, and if you found a match from our list, you MUST provide its corresponding ID in the 'productId' field.`;
+
+    const imagePart = {
+        inlineData: {
+            mimeType: 'image/jpeg',
+            data: base64ImageData,
+        },
+    };
+
+    const textPart = {
+        text: "Please identify the crystal in this image and recommend a matching product from the list.",
+    };
+
+    try {
+        const client = getAiClient();
+        const response = await client.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: { parts: [imagePart, textPart] },
+            config: {
+                systemInstruction,
+                responseMimeType: "application/json",
+                responseSchema,
+                temperature: 0.2, // Lower temperature for more deterministic identification
+            },
+        });
+
+        const jsonText = response.text.trim();
+        if (!jsonText) {
+            throw new Error("Received an empty response from the AI oracle.");
+        }
+        
+        const parsedJson = JSON.parse(jsonText);
+
+        if (parsedJson.crystalName && parsedJson.description) {
+            return parsedJson as GeminiSuggestion;
+        } else {
+            throw new Error("Invalid response format from API.");
+        }
+
+    } catch (error) {
+        console.error("Error calling Gemini API for image identification:", error);
+        if (error instanceof Error && error.message.startsWith("AI Oracle is not configured")) {
+            throw error;
+        }
+        if (error instanceof Error) {
+            const keySnippet = getApiKeySnippet();
+            throw new Error(`The Oracle could not identify the stone. (Key used: ${keySnippet}) (Details: ${error.message})`);
+        }
+        throw new Error("Failed to identify the stone. The stars may be misaligned due to an unknown issue.");
     }
 };

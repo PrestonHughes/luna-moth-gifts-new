@@ -4,6 +4,7 @@ export interface User {
   firstName?: string;
   lastName?: string;
   orders?: Order[];
+  role?: 'admin';
 }
 
 export interface ProductVariant {
@@ -51,4 +52,4 @@ export interface Order {
 }
 
 
-export type Page = 'home' | 'inventory' | 'account';
+export type Page = 'home' | 'inventory' | 'account' | 'visual-oracle';
