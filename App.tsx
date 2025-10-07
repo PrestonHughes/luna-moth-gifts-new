@@ -38,6 +38,47 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue;
 }
 
+interface HomePageProps {
+  featuredProducts: Product[];
+  onProductClick: (product: Product) => void;
+  navigateTo: (page: Page) => void;
+}
+
+const HomePage: React.FC<HomePageProps> = ({ featuredProducts, onProductClick, navigateTo }) => (
+  <div className="space-y-16 md:space-y-24">
+    {/* Hero & Crystal Finder Section */}
+    <section className="relative text-center animate-fade-in rounded-2xl overflow-hidden py-16 px-4">
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-lavender/30 to-transparent -z-10"></div>
+        <h1 className="font-serif text-5xl md:text-7xl font-bold text-brand-deep-purple mb-4">
+          Find Your Perfect Stone
+        </h1>
+        <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10">
+          Not sure what you're looking for? Let our AI-powered Crystal Oracle guide you.
+          <br/>
+          Share a feeling or intention, and we'll find the treasure to help manifest it.
+        </p>
+        <GeminiCrystalFinder products={products} onProductSelect={onProductClick} />
+    </section>
+
+    {/* Featured Products */}
+    <section className="animate-slide-up">
+        <h2 className="font-serif text-4xl font-bold text-center text-brand-deep-purple mb-8">
+          Featured Products
+        </h2>
+        <ProductGrid products={featuredProducts} onProductClick={onProductClick} />
+        <div className="text-center mt-12">
+            <button
+                onClick={() => navigateTo('inventory')}
+                className="bg-brand-light-purple text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity duration-300"
+                aria-label="View the full collection of products"
+            >
+                View Full Collection
+            </button>
+        </div>
+    </section>
+  </div>
+);
+
 
 const AppContent: React.FC = () => {
     // State management
@@ -213,41 +254,6 @@ const AppContent: React.FC = () => {
             .sort(() => 0.5 - Math.random())
             .slice(0, 8);
     }, []);
-
-    const HomePage = () => (
-      <div className="space-y-16 md:space-y-24">
-        {/* Hero & Crystal Finder Section */}
-        <section className="relative text-center animate-fade-in rounded-2xl overflow-hidden py-16 px-4">
-            <div className="absolute inset-0 bg-gradient-to-b from-brand-lavender/30 to-transparent -z-10"></div>
-            <h1 className="font-serif text-5xl md:text-7xl font-bold text-brand-deep-purple mb-4">
-              Find Your Perfect Stone
-            </h1>
-            <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10">
-              Not sure what you're looking for? Let our AI-powered Crystal Oracle guide you.
-              <br/>
-              Share a feeling or intention, and we'll find the treasure to help manifest it.
-            </p>
-            <GeminiCrystalFinder products={products} onProductSelect={handleProductClick} />
-        </section>
-
-        {/* Featured Products */}
-        <section className="animate-slide-up">
-            <h2 className="font-serif text-4xl font-bold text-center text-brand-deep-purple mb-8">
-              Featured Products
-            </h2>
-            <ProductGrid products={featuredProducts} onProductClick={handleProductClick} />
-            <div className="text-center mt-12">
-                <button
-                    onClick={() => navigateTo('inventory')}
-                    className="bg-brand-light-purple text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity duration-300"
-                    aria-label="View the full collection of products"
-                >
-                    View Full Collection
-                </button>
-            </div>
-        </section>
-      </div>
-    );
     
     // Render logic
     const renderPage = () => {
@@ -258,7 +264,11 @@ const AppContent: React.FC = () => {
                 return <AccountPage user={appUser} onLogoutClick={handleLogout} onUpdateUser={handleUpdateUser} />;
             case 'home':
             default:
-                return <HomePage />;
+                return <HomePage 
+                    featuredProducts={featuredProducts} 
+                    onProductClick={handleProductClick} 
+                    navigateTo={navigateTo} 
+                />;
         }
     };
 
