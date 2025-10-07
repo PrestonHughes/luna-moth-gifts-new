@@ -1,5 +1,6 @@
 
 
+
 import React from 'react';
 import type { User, Page } from '../types';
 import { Logo } from './Logo';
@@ -66,8 +67,8 @@ const Header: React.FC<HeaderProps> = ({ user, isLoadingUser, onLoginClick, onLo
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          {currentPage !== 'visual-oracle' && <button onClick={() => navigateTo('visual-oracle')} className="text-slate-600 hover:text-brand-purple transition-colors font-semibold text-lg tracking-wide">Visual Oracle</button>}
           {currentPage !== 'inventory' && <button onClick={() => navigateTo('inventory')} className="text-slate-600 hover:text-brand-purple transition-colors font-semibold text-lg tracking-wide">Collection</button>}
+          {user && currentPage !== 'stone-identifier' && <button onClick={() => navigateTo('stone-identifier')} className="text-slate-600 hover:text-brand-purple transition-colors font-semibold text-lg tracking-wide">Stone Identifier</button>}
           {user && currentPage !== 'account' && <button onClick={() => navigateTo('account')} className="text-slate-600 hover:text-brand-purple transition-colors font-semibold text-lg tracking-wide">My Account</button>}
         </nav>
 

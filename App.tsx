@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useMemo, useEffect } from 'react';
 import type { User, Page, Product, CartItem, ProductVariant, Order } from './types';
 import type firebase from 'firebase/compat/app';
@@ -24,7 +25,7 @@ import { useToast } from './hooks/useToast';
 // Pages
 import InventoryPage from './pages/InventoryPage';
 import AccountPage from './pages/AccountPage';
-import VisualOraclePage from './pages/VisualOraclePage';
+import StoneIdentifierPage from './pages/StoneIdentifierPage';
 
 // A simple debounce hook to delay function execution
 function useDebounce<T>(value: T, delay: number): T {
@@ -264,8 +265,8 @@ const AppContent: React.FC = () => {
                 return <InventoryPage products={products} onProductClick={handleProductClick} />;
             case 'account':
                 return <AccountPage user={appUser} onLogoutClick={handleLogout} onUpdateUser={handleUpdateUser} />;
-            case 'visual-oracle':
-                return <VisualOraclePage
+            case 'stone-identifier':
+                return <StoneIdentifierPage
                     user={appUser}
                     products={products}
                     onProductClick={handleProductClick}

@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { User, Product, GeminiSuggestion } from '../types';
 import { getVisualSearchesToday, logVisualSearch } from '../services/firestoreService';

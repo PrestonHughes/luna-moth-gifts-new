@@ -52,4 +52,4 @@ export interface Order {
 }
 
 
-export type Page = 'home' | 'inventory' | 'account' | 'visual-oracle';
+export type Page = 'home' | 'inventory' | 'account' | 'stone-identifier';

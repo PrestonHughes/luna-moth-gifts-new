@@ -85,8 +85,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, user, onClose, onLoginC
 
         <nav className="flex flex-col gap-6 text-lg mt-12">
           {currentPage !== 'home' && <button onClick={() => handleNavigate('home')} className="bg-transparent text-slate-700 hover:text-brand-purple font-medium text-left py-2">Home</button>}
-          {currentPage !== 'visual-oracle' && <button onClick={() => handleNavigate('visual-oracle')} className="bg-transparent text-slate-700 hover:text-brand-purple font-medium text-left py-2">Visual Oracle</button>}
           {currentPage !== 'inventory' && <button onClick={() => handleNavigate('inventory')} className="bg-transparent text-slate-700 hover:text-brand-purple font-medium text-left py-2">Collection</button>}
+          {user && currentPage !== 'stone-identifier' && <button onClick={() => handleNavigate('stone-identifier')} className="bg-transparent text-slate-700 hover:text-brand-purple font-medium text-left py-2">Stone Identifier</button>}
           {user && currentPage !== 'account' && <button onClick={() => handleNavigate('account')} className="bg-transparent text-slate-700 hover:text-brand-purple font-medium text-left py-2">My Account</button>}
            <button onClick={handleCartClick} className="bg-transparent flex items-center gap-2 text-slate-700 hover:text-brand-purple font-medium text-left py-2">
             <span>Cart</span>
